@@ -325,6 +325,49 @@ h1 { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; lett
 .todo .mini:hover:not(:disabled) { background: rgba(255,255,255,0.7); color: var(--note-ink); }
 .tstat { margin-top: 8px; font-size: 0.72rem; color: var(--note-soft); font-weight: 500; overflow-wrap: anywhere; }
 .tby { font-family: var(--font-body); font-size: 0.68rem; font-weight: 500; color: var(--note-soft); }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.tablebtn { display: block; width: 100%; margin-top: 8px; height: 30px; border: 0; border-radius: 999px; background: rgba(255,255,255,0.4); box-shadow: inset 0 0 0 1px rgba(58,46,5,0.35); color: var(--note-ink); font-size: 0.8rem; font-weight: 600; }
+.tablebtn:hover { background: rgba(255,255,255,0.7); }
+.tablebtn:focus-visible { outline-color: var(--note-ink); }
+.modal.wide { max-width: 860px; width: 100%; height: min(86vh, 760px); display: flex; flex-direction: column; overflow: hidden; padding: 18px 18px 12px; }
+.thd { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 10px; }
+.thd h3 { margin: 0; }
+.tnav { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+.tnav .mini { height: 34px; min-width: 34px; padding: 0 14px; color: var(--fg); }
+.trange { margin-left: 4px; font-weight: 600; font-size: 0.9rem; color: var(--muted); }
+.tnote { margin: 0 0 10px; padding: 8px 12px; border-radius: 12px; font-size: 0.82rem; background: color-mix(in srgb, var(--danger) 14%, transparent); }
+.twrap { flex: 1; min-height: 0; overflow: auto; border-radius: 16px; box-shadow: inset 0 0 0 1px var(--edge); }
+.ttable { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+.ttable th { text-align: left; font-size: 0.74rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); padding: 8px 10px; position: sticky; top: 0; background: color-mix(in srgb, var(--card) 92%, transparent); z-index: 1; }
+.ttable td { padding: 6px 10px; border-top: 1px solid var(--line); vertical-align: middle; }
+.ttable .dayrow th { text-transform: none; letter-spacing: 0; font-size: 0.9rem; color: var(--fg); position: static; background: color-mix(in srgb, var(--fg) 6%, transparent); border-top: 1px solid var(--line); padding: 9px 10px; }
+.dayrow.today th { background: color-mix(in srgb, var(--accent) 18%, transparent); }
+.dayrow.late th { background: color-mix(in srgb, var(--danger) 14%, transparent); }
+.dname { font-weight: 700; }
+.dbadge { margin-left: 8px; padding: 2px 9px; border-radius: 999px; background: var(--accent); color: var(--accent-fg); font-size: 0.7rem; font-weight: 600; }
+.dcount { float: right; font-family: var(--font-mono); font-size: 0.75rem; color: var(--muted); font-weight: 500; }
+.tdc, .tdx { width: 40px; padding-left: 8px; padding-right: 4px; }
+.tdd { width: 150px; }
+.tdby { width: 110px; color: var(--muted); font-size: 0.84rem; }
+.tdt .t { overflow-wrap: anywhere; }
+.tdt .t.done { text-decoration: line-through; color: var(--muted); }
+.tbyin { display: none; }
+.ttable .chk { border-color: var(--muted); width: 22px; height: 22px; }
+.ttable .chk[aria-checked="true"] { background: var(--accent); border-color: var(--accent); }
+.ttable .chk[aria-checked="true"]::after { border-color: var(--accent-fg); left: 5px; top: 1px; }
+.ttable .xbtn { color: var(--muted); }
+.ttable .xbtn:hover { background: var(--hover); color: var(--fg); }
+.dinput, .tadd2 { height: 34px; width: 100%; min-width: 0; padding: 0 10px; border: 0; border-radius: 10px; background: color-mix(in srgb, var(--bg) 50%, transparent); box-shadow: inset 0 0 0 1px var(--edge); color: var(--fg); font-size: 0.85rem; }
+.tadd2 { background: transparent; box-shadow: none; padding-left: 4px; }
+.tadd2:focus { background: color-mix(in srgb, var(--bg) 50%, transparent); box-shadow: inset 0 0 0 1px var(--edge); }
+.addtr td { border-top: 0; padding-top: 0; padding-bottom: 4px; }
+.dinput:disabled { opacity: 0.45; }
+@media (max-width: 600px) {
+  .tdby, .ttable thead th:nth-child(3) { display: none; }
+  .tbyin { display: inline; color: var(--muted); font-size: 0.7rem; }
+  .tdd { width: 128px; }
+  .modal.wide { height: 92vh; padding: 14px 12px 10px; border-radius: 22px; }
+}
 .ghost:active, .btn:active { transform: scale(0.96); }
 @media (prefers-reduced-motion: no-preference) {
   .site { transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), background-color 0.15s; }
@@ -367,6 +410,7 @@ h1 { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; lett
     <div class="thead"><h2 id="todoTitle">Tugas</h2><span class="thhr"><span class="tcount" id="todoCount"></span><button class="mini" id="teamBtn" type="button" hidden>Tim</button></span></div>
     <ul class="tlist" id="todoList"></ul>
     <input class="tadd" id="todoAdd" type="text" placeholder="Tugas baru, lalu Enter" maxlength="200" autocomplete="off" aria-label="Tambah tugas">
+    <button class="tablebtn" id="tableBtn" type="button">Tabel per hari</button>
     <button class="tclear" id="todoClear" type="button" hidden>Hapus yang selesai</button>
     <div class="tstat" id="todoStat" role="status"></div>
   </section>
@@ -451,7 +495,7 @@ h1 { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; lett
       if (q && typeof q.text === "string" && q.text.trim()) out.quotes.push({ id: String(q.id || rid()), text: q.text.slice(0, 200) });
     });
     if (Array.isArray(d.todos)) d.todos.slice(0, 100).forEach(function (t) {
-      if (t && typeof t.text === "string" && t.text.trim()) out.todos.push({ id: String(t.id || rid()), text: t.text.slice(0, 200), done: !!t.done });
+      if (t && typeof t.text === "string" && t.text.trim()) out.todos.push({ id: String(t.id || rid()), text: t.text.slice(0, 200), done: !!t.done, day: /^\d{4}-\d{2}-\d{2}$/.test(t.day || "") ? t.day : "" });
     });
     if (d.bg && typeof d.bg.id === "string") {
       out.bg = { id: d.bg.id.slice(0, 20), color: /^#[0-9a-f]{6}$/i.test(d.bg.color || "") ? d.bg.color : DEF_BG.color };
@@ -620,7 +664,8 @@ h1 { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; lett
   }
 
   /* ---------- modal ---------- */
-  function closeModal() { document.getElementById("modalRoot").textContent = ""; document.removeEventListener("keydown", modalKey, true); }
+  var tableOpen = false;
+  function closeModal() { tableOpen = false; document.getElementById("modalRoot").textContent = ""; document.removeEventListener("keydown", modalKey, true); }
   function modalKey(e) { if (e.key === "Escape") { e.stopPropagation(); closeModal(); } }
   function openModal(title, body, onSubmit, opts) {
     opts = opts || {};
@@ -983,7 +1028,7 @@ h1 { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; lett
   var SECRET_MSG = "Kunci itu rahasia (secret atau service_role) dan tidak boleh dipasang di halaman publik. Pakai kunci publishable atau anon, lalu buat ulang kunci rahasia Anda di Supabase.";
   var cfgMsg = cfgProblem();
   var teamAvail = CFG_PRESENT && !cfgMsg;
-  var teamCode = "", teamTodos = [], teamLoaded = false, teamErr = false, teamWhy = "", teamWriteErr = false, teamWriteWhy = "", teamSig = "", pollTimer = null;
+  var teamCode = "", teamTodos = [], teamLoaded = false, teamErr = false, teamWhy = "", teamWriteErr = false, teamWriteWhy = "", teamSig = "", pollTimer = null, teamNoDay = false;
   function cfgProblem() {
     if (!CFG_PRESENT) return "";
     if (!TEAM_URL && !TEAM_KEY) return "Mode tim belum aktif: isi supabaseUrl dan supabaseKey di config.js.";
@@ -1033,12 +1078,18 @@ h1 { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; lett
     if (!teamOn()) return;
     var code = teamCode;
     try {
-      var rows = await teamReq("GET", "?team=eq." + encodeURIComponent(code) + "&select=id,title,done,author,created_at&order=created_at.asc&limit=200");
+      var rows;
+      try {
+        rows = await teamReq("GET", "?team=eq." + encodeURIComponent(code) + "&select=id,title,done,author,created_at" + (teamNoDay ? "" : ",day") + "&order=created_at.asc&limit=200");
+      } catch (e0) {
+        if (e0.status === 400 && !teamNoDay) { teamNoDay = true; return teamFetch(); }
+        throw e0;
+      }
       if (code !== teamCode) return;
       var list = (Array.isArray(rows) ? rows : []).map(function (r) {
-        return { id: String(r.id), text: String(r.title || ""), done: !!r.done, by: r.author ? String(r.author) : "" };
+        return { id: String(r.id), text: String(r.title || ""), done: !!r.done, by: r.author ? String(r.author) : "", day: r.day ? String(r.day).slice(0, 10) : "" };
       });
-      var sig = JSON.stringify(list) + "|ok";
+      var sig = JSON.stringify(list) + "|ok" + (teamNoDay ? "|nd" : "");
       var changed = sig !== teamSig || teamErr || !teamLoaded;
       teamSig = sig; teamTodos = list; teamErr = false; teamLoaded = true;
       if (changed) renderTodos();
@@ -1056,9 +1107,19 @@ h1 { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; lett
     try { await fn(); teamWriteErr = false; } catch (e) { teamWriteErr = true; teamWriteWhy = explainErr(e); }
     await teamFetch(); renderTodos();
   }
-  function teamAdd(text) {
-    teamTodos.push({ id: "tmp-" + rid(), text: text, done: false, by: state.name || "" }); renderTodos();
-    teamWrite(function () { return teamReq("POST", "", { team: teamCode, title: text, author: state.name || null }); });
+  function teamAdd(text, day) {
+    teamTodos.push({ id: "tmp-" + rid(), text: text, done: false, by: state.name || "", day: day || "" }); renderTodos();
+    teamWrite(function () {
+      var row = { team: teamCode, title: text, author: state.name || null };
+      if (!teamNoDay) row.day = day || null;
+      return teamReq("POST", "", row);
+    });
+  }
+  function teamMove(t, day) {
+    if (teamNoDay) return;
+    t.day = day; renderTodos();
+    if (String(t.id).indexOf("tmp-") === 0) return;
+    teamWrite(function () { return teamReq("PATCH", "?id=eq." + encodeURIComponent(t.id), { day: day || null }); });
   }
   function teamToggle(t) {
     var nv = !t.done; t.done = nv; renderTodos();
@@ -1093,7 +1154,10 @@ h1 { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; lett
         await teamReq("GET", "?select=id&limit=1");
         await teamReq("POST", "", { team: "_uji", title: "uji sambungan", author: null });
         await teamReq("DELETE", "?team=eq._uji");
-        testOut.textContent = "Tersambung. Tabel tasks bisa dibaca, ditulis, dan dihapus.";
+        var dayOk = true;
+        try { await teamReq("GET", "?select=day&limit=1"); } catch (x) { dayOk = false; }
+        testOut.textContent = "Tersambung. Tabel tasks bisa dibaca, ditulis, dan dihapus." +
+          (dayOk ? "" : " Namun kolom day belum ada, jadi tanggal tugas belum tersimpan di server. Jalankan ulang supabase-setup.sql.");
       } catch (e) { testOut.textContent = explainErr(e); }
     });
     body.appendChild(testBtn);
@@ -1117,33 +1181,173 @@ h1 { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; lett
     renderTodos(); teamStartPolling(); teamFetch();
   }
 
+  /* ---------- tanggal ---------- */
+  var DAYS = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+  var MONTHS = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+  function p2(n) { return (n < 10 ? "0" : "") + n; }
+  function dstr(d) { return d.getFullYear() + "-" + p2(d.getMonth() + 1) + "-" + p2(d.getDate()); }
+  function dparse(s) { var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s || ""); return m ? new Date(+m[1], +m[2] - 1, +m[3]) : null; }
+  function todayStr() { return dstr(new Date()); }
+  function addDays(s, n) { var d = dparse(s); d.setDate(d.getDate() + n); return dstr(d); }
+  function weekStart(s) { var d = dparse(s); var off = (d.getDay() + 6) % 7; d.setDate(d.getDate() - off); return dstr(d); }
+  function dshort(s) { var d = dparse(s); return d ? d.getDate() + " " + MONTHS[d.getMonth()] : ""; }
+  function dlong(s) { var d = dparse(s); return d ? DAYS[d.getDay()] + ", " + d.getDate() + " " + MONTHS[d.getMonth()] : ""; }
+
+  /* ---------- operasi tugas (lokal atau tim) ---------- */
+  function taskList() { return teamOn() ? teamTodos : state.todos; }
+  function addTask(text, day) {
+    text = String(text || "").trim().slice(0, 200); if (!text) return false;
+    if (teamOn()) { teamAdd(text, day); return true; }
+    if (state.todos.length >= 100) return false;
+    state.todos.push({ id: rid(), text: text, done: false, day: day || "" }); touch(); return true;
+  }
+  function toggleTask(t) { if (teamOn()) teamToggle(t); else { t.done = !t.done; touch(); } }
+  function removeTask(t) {
+    if (teamOn()) teamDelete(t); else { state.todos = state.todos.filter(function (x) { return x.id !== t.id; }); touch(); }
+  }
+  function moveTask(t, day) { if (teamOn()) teamMove(t, day); else { t.day = day; touch(); } }
+
   function renderTodos() {
     var ul = document.getElementById("todoList");
     ul.textContent = "";
     var team = teamOn();
-    var list = team ? teamTodos : state.todos;
-    var open = list.filter(function (t) { return !t.done; }).length;
+    var list = taskList();
+    var today = todayStr();
+    var vis = list.filter(function (t) { return !t.day || t.day <= today; });
+    var open = vis.filter(function (t) { return !t.done; }).length;
     setText("todoBtn", open ? "Tugas · " + open : "Tugas");
-    setText("todoCount", list.length ? (list.length - open) + "/" + list.length : "");
+    setText("todoCount", vis.length ? (vis.length - open) + "/" + vis.length : "");
     setText("todoTitle", team ? "Tugas tim" : "Tugas");
     setText("todoStat", !teamAvail ? cfgMsg : !team ? "Tugas pribadi. Tekan Tim untuk berbagi dengan rekan." :
-      teamErr ? teamWhy : teamWriteErr ? teamWriteWhy : "Tim: " + teamCode);
-    if (!list.length) ul.appendChild(el("li", "empty-li", team && !teamLoaded && !teamErr ? "Memuat…" : "Belum ada tugas."));
-    list.forEach(function (t) {
+      teamErr ? teamWhy : teamWriteErr ? teamWriteWhy : "Tim: " + teamCode + (teamNoDay ? " · tanggal belum aktif di server (jalankan ulang supabase-setup.sql)" : ""));
+    var later = list.length - vis.length;
+    document.getElementById("tableBtn").textContent = later ? "Tabel per hari · " + later + " mendatang" : "Tabel per hari";
+    if (!vis.length) ul.appendChild(el("li", "empty-li", team && !teamLoaded && !teamErr ? "Memuat…" : list.length ? "Tidak ada tugas hari ini." : "Belum ada tugas."));
+    vis.forEach(function (t) {
       var li = el("li");
       var c = el("button", "chk"); c.type = "button"; c.setAttribute("role", "checkbox");
       c.setAttribute("aria-checked", String(t.done)); c.setAttribute("aria-label", "Tandai selesai: " + t.text);
-      c.addEventListener("click", function () { if (team) teamToggle(t); else { t.done = !t.done; touch(); } });
+      c.addEventListener("click", function () { toggleTask(t); });
       li.appendChild(c);
       var tx = el("span", "t" + (t.done ? " done" : ""), t.text);
-      if (team && t.by) tx.appendChild(el("small", "tby", " · " + t.by));
+      var tag = [];
+      if (t.day && t.day < today && !t.done) tag.push("lewat " + dshort(t.day));
+      if (team && t.by) tag.push(t.by);
+      if (tag.length) tx.appendChild(el("small", "tby", " · " + tag.join(" · ")));
       li.appendChild(tx);
-      li.appendChild(btn("xbtn", "×", "Hapus tugas: " + t.text, function () {
-        if (team) teamDelete(t); else { state.todos = state.todos.filter(function (x) { return x.id !== t.id; }); touch(); }
-      }));
+      li.appendChild(btn("xbtn", "×", "Hapus tugas: " + t.text, function () { removeTask(t); }));
       ul.appendChild(li);
     });
     document.getElementById("todoClear").hidden = !list.some(function (t) { return t.done; });
+    if (tableOpen) renderTable();
+  }
+
+  /* ---------- tabel tugas per hari ---------- */
+  var tableWeek = "";
+  function openTable() {
+    tableWeek = weekStart(todayStr());
+    var root = document.getElementById("modalRoot");
+    root.textContent = "";
+    var ov = el("div", "overlay");
+    ov.addEventListener("mousedown", function (e) { if (e.target === ov) closeModal(); });
+    var m = el("div", "modal wide"); m.id = "tableModal"; m.setAttribute("role", "dialog"); m.setAttribute("aria-label", "Tabel tugas per hari");
+    ov.appendChild(m); root.appendChild(ov);
+    document.addEventListener("keydown", modalKey, true);
+    tableOpen = true;
+    renderTable();
+  }
+  function renderTable() {
+    var m = document.getElementById("tableModal"); if (!m) return;
+    var fk = null, fv = "", fs = 0, ae = document.activeElement;
+    if (ae && m.contains(ae) && ae.getAttribute("data-k")) { fk = ae.getAttribute("data-k"); fv = ae.value; fs = ae.selectionStart || 0; }
+    var scroller = m.querySelector(".twrap"), sy = scroller ? scroller.scrollTop : 0;
+    m.textContent = "";
+    var team = teamOn(), list = taskList(), today = todayStr();
+    var wEnd = addDays(tableWeek, 6);
+
+    var head = el("div", "thd");
+    head.appendChild(el("h3", null, team ? "Tabel tugas · " + teamCode : "Tabel tugas"));
+    head.appendChild(btn("btn", "Tutup", null, closeModal));
+    m.appendChild(head);
+
+    var nav = el("div", "tnav");
+    nav.appendChild(btn("mini", "‹", "Minggu sebelumnya", function () { tableWeek = addDays(tableWeek, -7); renderTable(); }));
+    nav.appendChild(btn("mini", "Minggu ini", null, function () { tableWeek = weekStart(todayStr()); renderTable(); }));
+    nav.appendChild(btn("mini", "›", "Minggu berikutnya", function () { tableWeek = addDays(tableWeek, 7); renderTable(); }));
+    var rng = dshort(tableWeek) + " – " + dshort(wEnd) + " " + dparse(wEnd).getFullYear();
+    nav.appendChild(el("span", "trange", rng));
+    m.appendChild(nav);
+    if (team && teamNoDay) m.appendChild(el("p", "tnote", "Tanggal belum tersimpan di server. Jalankan ulang supabase-setup.sql di Supabase, lalu muat ulang halaman."));
+    if (team && teamErr) m.appendChild(el("p", "tnote", teamWhy));
+
+    var wrap = el("div", "twrap");
+    var tb = el("table", "ttable");
+    var cap = el("caption", "sr", "Tugas minggu " + rng); tb.appendChild(cap);
+    var th = el("thead"), hr = el("tr");
+    ["", "Tugas", "Oleh", "Tanggal", ""].forEach(function (h, i) {
+      var c = el("th", i === 2 ? "tdby" : null, h); c.scope = "col"; if (i === 0 || i === 4) c.setAttribute("aria-label", i ? "Hapus" : "Selesai"); hr.appendChild(c);
+    });
+    th.appendChild(hr); tb.appendChild(th);
+    var body = el("tbody");
+
+    function group(title, sub, items, day, cls, hint) {
+      var tr = el("tr", "dayrow" + (cls ? " " + cls : ""));
+      var h = el("th", null); h.colSpan = 5; h.scope = "colgroup";
+      h.appendChild(el("span", "dname", title));
+      if (sub) h.appendChild(el("span", "dbadge", sub));
+      var dn = items.filter(function (t) { return t.done; }).length;
+      if (items.length) h.appendChild(el("span", "dcount", dn + "/" + items.length));
+      tr.appendChild(h); body.appendChild(tr);
+      items.forEach(function (t) { body.appendChild(taskRow(t)); });
+      if (day !== null) {
+        var ar = el("tr", "addtr"), ac = el("td"); ac.colSpan = 5;
+        var inp = el("input", "tadd2"); inp.type = "text"; inp.maxLength = 200; inp.autocomplete = "off";
+        inp.placeholder = "+ Tambah tugas" + (title ? " · " + title : ""); inp.setAttribute("data-k", "add-" + (day || "none"));
+        inp.setAttribute("aria-label", "Tambah tugas: " + title);
+        inp.addEventListener("keydown", function (e) {
+          if (e.key !== "Enter") return; e.preventDefault();
+          var v = inp.value.trim(); if (!v) return;
+          inp.value = ""; addTask(v, day);
+        });
+        ac.appendChild(inp); ar.appendChild(ac); body.appendChild(ar);
+      }
+    }
+    function taskRow(t) {
+      var tr = el("tr", "trow" + (t.done ? " isdone" : ""));
+      var c0 = el("td", "tdc");
+      var c = el("button", "chk"); c.type = "button"; c.setAttribute("role", "checkbox");
+      c.setAttribute("aria-checked", String(t.done)); c.setAttribute("aria-label", "Tandai selesai: " + t.text);
+      c.addEventListener("click", function () { toggleTask(t); });
+      c0.appendChild(c); tr.appendChild(c0);
+      var c1 = el("td", "tdt"); c1.appendChild(el("span", "t" + (t.done ? " done" : ""), t.text));
+      if (t.by) c1.appendChild(el("small", "tby tbyin", " · " + t.by));
+      tr.appendChild(c1);
+      tr.appendChild(el("td", "tdby", t.by || "—"));
+      var c3 = el("td", "tdd");
+      var di = el("input", "dinput"); di.type = "date"; di.value = t.day || ""; di.setAttribute("aria-label", "Tanggal: " + t.text);
+      di.disabled = !!(team && teamNoDay);
+      di.addEventListener("change", function () { moveTask(t, /^\d{4}-\d{2}-\d{2}$/.test(di.value) ? di.value : ""); });
+      c3.appendChild(di); tr.appendChild(c3);
+      var c4 = el("td", "tdx"); c4.appendChild(btn("xbtn", "×", "Hapus tugas: " + t.text, function () { removeTask(t); }));
+      tr.appendChild(c4);
+      return tr;
+    }
+
+    var late = list.filter(function (t) { return t.day && t.day < tableWeek && !t.done; });
+    if (late.length) group("Belum selesai dari sebelumnya", "", late, null, "late");
+    for (var i = 0; i < 7; i++) {
+      var ds = addDays(tableWeek, i);
+      var its = list.filter(function (t) { return t.day === ds; });
+      group(dlong(ds), ds === today ? "Hari ini" : "", its, ds, ds === today ? "today" : "");
+    }
+    var nod = list.filter(function (t) { return !t.day; });
+    group("Tanpa tanggal", "", nod, "", "nodate");
+    tb.appendChild(body); wrap.appendChild(tb); m.appendChild(wrap);
+    wrap.scrollTop = sy;
+    if (fk) {
+      var back = m.querySelector('[data-k="' + fk + '"]');
+      if (back) { back.value = fv; back.focus(); try { back.setSelectionRange(fs, fs); } catch (e) {} }
+    }
   }
   function setTodoOpen(open, focus, silent) {
     var pop = document.getElementById("todoPop");
@@ -1266,11 +1470,9 @@ h1 { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; lett
   document.getElementById("todoAdd").addEventListener("keydown", function (e) {
     if (e.key !== "Enter") return;
     var v = this.value.trim(); if (!v) return;
-    if (teamOn()) { teamAdd(v.slice(0, 200)); this.value = ""; return; }
-    if (state.todos.length >= 100) return;
-    state.todos.push({ id: rid(), text: v.slice(0, 200), done: false });
-    this.value = ""; touch();
+    if (addTask(v, todayStr())) this.value = "";
   });
+  document.getElementById("tableBtn").addEventListener("click", openTable);
   document.getElementById("todoClear").addEventListener("click", function () {
     if (teamOn()) { teamClearDone(); return; }
     state.todos = state.todos.filter(function (t) { return !t.done; }); touch();
