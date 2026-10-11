@@ -1120,7 +1120,8 @@ h1 { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; lett
     await teamFetch(); renderTodos();
   }
   function isMaster() { return !!(teamOn() && teamInfo && teamInfo.master); }
-  function addTeam() { return isMaster() ? (boardTeam || teamInfo.tim) : ""; }
+  function addTeam() { return isMaster() ? boardTeam : ""; }
+  function needTeam() { return isMaster() && !boardTeam; }
   function isTmp(t) { return String(t.id).indexOf("tmp-") === 0; }
   function teamAdd(text, day) {
     var tim = addTeam();
@@ -1218,7 +1219,7 @@ h1 { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; lett
   }
   function addTask(text, day) {
     text = String(text || "").trim().slice(0, 200); if (!text) return false;
-    if (teamOn()) { teamAdd(text, day); return true; }
+    if (teamOn()) { if (needTeam()) return false; teamAdd(text, day); return true; }
     if (state.todos.length >= 100) return false;
     state.todos.push({ id: rid(), text: text, done: false, day: day || "" }); touch(); return true;
   }
@@ -1242,6 +1243,8 @@ h1 { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; lett
     var who = !teamInfo ? "Menghubungkan…" : master ? "Master · " + (boardTeam ? boardTeam : "semua tim") : "Tim: " + teamInfo.tim;
     setText("todoStat", !teamAvail ? cfgMsg : !team ? "Tugas pribadi. Tekan Tim untuk berbagi dengan rekan." :
       teamErr ? teamWhy : teamWriteErr ? teamWriteWhy : who);
+    var ta = document.getElementById("todoAdd");
+    ta.disabled = needTeam(); ta.placeholder = needTeam() ? "Buka Papan, pilih tim, lalu tambah" : "Tugas baru, lalu Enter";
     var later = list.length - vis.length;
     document.getElementById("tableBtn").textContent = later ? "Papan per hari · " + later + " mendatang" : "Papan per hari";
     if (!vis.length) ul.appendChild(el("li", "empty-li", team && !teamLoaded && !teamErr ? "Memuat…" : list.length ? "Tidak ada tugas hari ini." : "Belum ada tugas."));
@@ -1321,7 +1324,7 @@ h1 { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; lett
         ch.setAttribute("aria-pressed", String(boardTeam === n)); chips.appendChild(ch);
       });
       m.appendChild(chips);
-      m.appendChild(el("p", "thint", "Tugas baru ditambahkan untuk: " + addTeam() + (boardTeam ? "" : " (pilih tim di atas untuk menambah ke tim lain)")));
+      m.appendChild(el("p", "thint", boardTeam ? "Tugas baru masuk ke tim: " + boardTeam : "Pilih salah satu tim di atas (misalnya tim-a) untuk menambah tugas."));
     }
     if (team && teamErr) m.appendChild(el("p", "tnote", teamWhy));
     else if (team && teamWriteErr) m.appendChild(el("p", "tnote", teamWriteWhy));
@@ -1346,7 +1349,7 @@ h1 { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; lett
       n.appendChild(ul);
       if (day !== null) {
         var inp = el("input", "nadd"); inp.type = "text"; inp.maxLength = 200; inp.autocomplete = "off";
-        inp.placeholder = "+ tugas baru"; inp.setAttribute("data-k", "add-" + (day || "none")); inp.setAttribute("aria-label", "Tambah tugas: " + title);
+        inp.placeholder = needTeam() ? "pilih tim dulu" : "+ tugas baru"; inp.disabled = needTeam(); inp.setAttribute("data-k", "add-" + (day || "none")); inp.setAttribute("aria-label", "Tambah tugas: " + title);
         inp.addEventListener("keydown", function (e) {
           if (e.key !== "Enter") return; e.preventDefault();
           var v = inp.value.trim(); if (!v) return;
