@@ -1,0 +1,1278 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Peluncur Situs</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%2064%2064%27%3E%3Cdefs%3E%3ClinearGradient%20id%3D%27g%27%20x1%3D%270%27%20y1%3D%270%27%20x2%3D%271%27%20y2%3D%271%27%3E%3Cstop%20offset%3D%270%27%20stop-color%3D%27%231d2b53%27/%3E%3Cstop%20offset%3D%271%27%20stop-color%3D%27%23b8647a%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width%3D%2764%27%20height%3D%2764%27%20rx%3D%2714%27%20fill%3D%27url%28%23g%29%27/%3E%3Cpath%20d%3D%27M32%2012%20L44%2034%20H37%20V50%20H27%20V34%20H20%20Z%27%20fill%3D%27%23fff%27/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Caveat:wght@500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="config.js"></script>
+<style>html{color-scheme:light}body{margin:0}</style>
+</head>
+<body>
+
+
+
+
+<style>
+/* Layout: beranda penuh layar ala Momentum. Latar generatif atau foto sendiri,
+   jam besar di tengah, fokus hari ini, kutipan di bawah. Situs dan tugas
+   membuka panel. Hero selalu teks putih di atas latar gelap, panel mengikuti tema. */
+:root {
+  --bg: #eceee9;
+  --card: #f7f8f5;
+  --fg: #16201b;
+  --muted: #5b6862;
+  --line: #d2d7d0;
+  --accent: #007aff;
+  --accent-fg: #ffffff;
+  --hover: #e4e8e1;
+  --danger: #b3261e;
+  --tile-l: 89%;
+  --tile-fg: 27%;
+  --panel-a: 60%;
+  --blur: blur(30px) saturate(1.8);
+  --edge: rgba(255, 255, 255, 0.55);
+  --lift: 0 10px 40px rgba(0, 0, 0, 0.22);
+  --hero-base: #121826;
+  --hero-fg: #ffffff;
+  --hero-soft: rgba(255, 255, 255, 0.82);
+  --glass: rgba(255, 255, 255, 0.14);
+  --glass-hover: rgba(255, 255, 255, 0.24);
+  --glass-line: rgba(255, 255, 255, 0.3);
+  --hero-shadow: 0 1px 2px rgba(0, 0, 0, 0.25), 0 2px 18px rgba(0, 0, 0, 0.45);
+  --dim: rgba(8, 12, 10, 0.18);
+  --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", "Segoe UI", system-ui, sans-serif;
+  --font-body: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1412; --card: #171e1b; --fg: #e6ebe7; --muted: #92a098; --line: #2a3430;
+    --accent: #0a84ff; --accent-fg: #ffffff; --hover: #212b27; --danger: #ff8a80;
+    --tile-l: 22%; --tile-fg: 82%; --panel-a: 48%; --edge: rgba(255,255,255,0.16); --lift: 0 10px 40px rgba(0,0,0,0.45);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1412; --card: #171e1b; --fg: #e6ebe7; --muted: #92a098; --line: #2a3430;
+  --accent: #0a84ff; --accent-fg: #ffffff; --hover: #212b27; --danger: #ff8a80;
+  --tile-l: 22%; --tile-fg: 82%; --panel-a: 48%; --edge: rgba(255,255,255,0.16); --lift: 0 10px 40px rgba(0,0,0,0.45);
+  color-scheme: dark;
+}
+html, body { height: 100%; }
+body { background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 15px; line-height: 1.45; overflow-x: hidden; }
+*, *::before, *::after { box-sizing: border-box; }
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+
+/* ---------- hero ---------- */
+.bgl { position: fixed; inset: 0; z-index: 0; background-color: var(--hero-base); background-size: cover; background-position: center; }
+.scrim { position: fixed; inset: 0; z-index: 1; pointer-events: none;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.38) 0%, rgba(0,0,0,0.04) 32%, rgba(0,0,0,0.06) 55%, rgba(0,0,0,0.55) 100%); }
+.stage { position: relative; z-index: 2; height: 100%; min-height: 560px; display: grid; grid-template-rows: auto 1fr auto;
+  padding-inline: 16px; padding-block: 16px; color: var(--hero-fg); text-shadow: var(--hero-shadow); }
+.topbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.topdate { color: var(--hero-soft); font-size: 0.95rem; text-align: right; }
+.ghost { height: 40px; padding: 0 18px; border-radius: 999px; border: 1px solid var(--glass-line); background: var(--glass);
+  color: var(--hero-fg); font-weight: 500; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); text-shadow: none; white-space: nowrap; }
+.ghost:hover { background: var(--glass-hover); }
+.ghost:focus-visible, .lnk:focus-visible, .chk:focus-visible, .xbtn:focus-visible { outline-color: #fff; }
+
+.center { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 6px; min-width: 0; padding-block: 12px; }
+.clockbig { font-family: var(--font-display); font-weight: 600; font-size: clamp(4.4rem, 18vw, 10rem); line-height: 0.95; letter-spacing: -0.045em; font-variant-numeric: tabular-nums; }
+.greet { font-family: var(--font-display); font-weight: 500; font-size: clamp(1.35rem, 4vw, 2.2rem); letter-spacing: -0.01em; overflow-wrap: anywhere; text-wrap: balance; }
+.focus { margin-top: 28px; width: min(100%, 540px); display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.flabel { color: var(--hero-soft); font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 500; }
+.finput { width: 100%; background: transparent; border: 0; border-bottom: 2px solid var(--glass-line); color: var(--hero-fg); text-align: center;
+  font-family: var(--font-display); font-size: clamp(1.2rem, 3.4vw, 1.7rem); padding: 6px 4px; text-shadow: inherit; border-radius: 0; }
+.finput::placeholder { color: rgba(255,255,255,0.5); }
+.finput:focus { outline: none; border-bottom-color: #fff; }
+.frow { display: flex; align-items: center; justify-content: center; gap: 12px; max-width: 100%; }
+.ftext { font-family: var(--font-display); font-size: clamp(1.2rem, 3.4vw, 1.7rem); font-weight: 500; overflow-wrap: anywhere; min-width: 0; }
+.ftext.done { text-decoration: line-through; opacity: 0.65; }
+.chk { flex: none; width: 24px; height: 24px; border-radius: 7px; border: 2px solid var(--hero-fg); background: transparent; padding: 0; position: relative; text-shadow: none; }
+.chk[aria-checked="true"] { background: var(--hero-fg); }
+.chk[aria-checked="true"]::after { content: ""; position: absolute; left: 6px; top: 1px; width: 6px; height: 12px; border: solid #16201b; border-width: 0 2.5px 2.5px 0; transform: rotate(45deg); }
+.xbtn { flex: none; border: 0; background: transparent; color: var(--hero-soft); width: 28px; height: 28px; border-radius: 50%; font-size: 1.1rem; line-height: 1; padding: 0; text-shadow: none; }
+.xbtn:hover { background: var(--glass); color: var(--hero-fg); }
+
+.pins { margin-top: 30px; width: min(100%, 760px); display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+.pinchip { display: inline-flex; align-items: center; gap: 10px; max-width: 100%; min-width: 0; height: 46px; padding: 0 18px 0 8px; border-radius: 999px;
+  border: 1px solid var(--glass-line); background: var(--glass); color: var(--hero-fg); text-decoration: none; text-shadow: none; font-weight: 500;
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+.pinchip:hover { background: var(--glass-hover); }
+.pinchip:focus-visible { outline-color: #fff; }
+.pinchip .tile { width: 30px; height: 30px; border-radius: 50%; font-size: 0.9rem; }
+.pinchip .pt { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mini.pin[aria-pressed="true"] { color: var(--accent); border-color: var(--accent); }
+.bottom { display: grid; grid-template-columns: 1fr minmax(0, 640px) 1fr; align-items: end; gap: 12px; }
+.bl { justify-self: start; } .br { justify-self: end; }
+.qwrap { text-align: center; min-width: 0; display: flex; flex-direction: column; gap: 6px; align-items: center; }
+.qtext { margin: 0; font-family: var(--font-display); font-weight: 500; font-size: clamp(1rem, 2.3vw, 1.3rem); line-height: 1.3; text-wrap: balance; overflow-wrap: anywhere; }
+.qline { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 4px 12px; color: var(--hero-soft); font-size: 0.82rem; }
+.lnk { border: 0; background: none; padding: 4px 2px; color: var(--hero-soft); text-decoration: underline; text-underline-offset: 3px; text-shadow: inherit; }
+.lnk:hover { color: var(--hero-fg); }
+@media (max-width: 720px) {
+  .bottom { grid-template-columns: 1fr 1fr; }
+  .qwrap { grid-column: 1 / -1; order: -1; }
+  .stage { min-height: 600px; }
+}
+
+/* ---------- tugas ---------- */
+.todo { position: absolute; right: 16px; bottom: 68px; width: min(340px, calc(100% - 32px)); max-height: 60%; overflow: auto; z-index: 5;
+  background: var(--card); color: var(--fg); border: 1px solid var(--line); border-radius: 14px; padding: 14px; text-shadow: none; box-shadow: 0 12px 40px rgba(0,0,0,0.35); }
+.todo h2 { font-family: var(--font-display); font-size: 1.05rem; font-weight: 600; margin: 0; }
+.thead { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 10px; }
+.tcount { font-family: var(--font-mono); font-size: 0.72rem; color: var(--muted); }
+.tlist { list-style: none; margin: 0 0 10px; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.tlist li { display: flex; align-items: center; gap: 10px; padding: 6px 4px; border-radius: 8px; }
+.tlist li:hover { background: var(--hover); }
+.tlist .t { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.tlist .t.done { text-decoration: line-through; color: var(--muted); }
+.tlist .empty-li { color: var(--muted); }
+.todo .chk { border-color: var(--muted); width: 22px; height: 22px; }
+.todo .chk[aria-checked="true"] { background: var(--accent); border-color: var(--accent); }
+.todo .chk[aria-checked="true"]::after { border-color: var(--accent-fg); left: 5px; top: 1px; }
+.todo .xbtn { color: var(--muted); }
+.todo .xbtn:hover { background: var(--hover); color: var(--fg); }
+.tadd { width: 100%; height: 40px; padding: 0 12px; border: 1px solid var(--line); border-radius: 9px; background: var(--bg); }
+.tclear { margin-top: 8px; border: 0; background: none; color: var(--muted); padding: 4px 0; text-decoration: underline; text-underline-offset: 3px; }
+
+/* ---------- panel situs ---------- */
+.dim { position: fixed; inset: 0; background: var(--dim); z-index: 19; opacity: 0; visibility: hidden; }
+.dim.open { opacity: 1; visibility: visible; }
+.drawer { position: fixed; top: 12px; bottom: 12px; left: 12px; width: min(460px, calc(100% - 24px)); z-index: 20; color: var(--fg);
+  border-radius: 28px; box-shadow: var(--lift), inset 0 0 0 1px var(--edge);
+  background: var(--bg);
+  background: color-mix(in srgb, var(--bg) var(--panel-a), transparent);
+  backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur);
+  border: 0; overflow: auto; padding-inline: 16px; padding-block: calc(16px + env(safe-area-inset-top, 0px)) calc(24px + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-104%); visibility: hidden; text-shadow: none; }
+.drawer.open { transform: none; visibility: visible; }
+@media (prefers-reduced-motion: no-preference) {
+  .drawer { transition: transform 0.22s ease, visibility 0s linear 0.22s; }
+  .drawer.open { transition: transform 0.22s ease; }
+  .dim { transition: opacity 0.2s; }
+  .site, .btn, .mini, .ghost { transition: background-color 0.12s; }
+}
+.dhead { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 14px; }
+h1 { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; letter-spacing: -0.02em; margin: 0; }
+.search { position: relative; margin-bottom: 12px; }
+.search input { width: 100%; height: 44px; padding: 0 56px 0 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--card); font-size: 1rem; }
+.search input::placeholder { color: var(--muted); }
+.search kbd { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); font-family: var(--font-mono); font-size: 0.75rem; color: var(--muted); border: 1px solid var(--line); border-radius: 5px; padding: 1px 6px; pointer-events: none; }
+.actions { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+.btn { height: 42px; padding: 0 16px; border-radius: 10px; border: 1px solid var(--line); background: var(--card); font-weight: 500; white-space: nowrap; }
+.btn:hover { background: var(--hover); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-fg); font-weight: 600; }
+.btn.primary:hover { filter: brightness(1.08); background: var(--accent); }
+.btn[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.btn.danger { color: var(--danger); border-color: var(--danger); }
+.note { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; justify-content: space-between; border: 1px dashed var(--line); border-radius: 10px; padding: 10px 14px; margin-bottom: 16px; color: var(--muted); font-size: 0.9rem; }
+.note button { border: 0; background: none; color: var(--accent); font-weight: 600; padding: 4px 0; }
+
+.grid { display: grid; grid-template-columns: 1fr; gap: 14px; align-items: start; }
+.group { background: color-mix(in srgb, var(--card) 40%, transparent); border: 0; box-shadow: inset 0 0 0 1px var(--edge); border-radius: 20px; padding: 6px 6px 8px; min-width: 0; }
+.ghead { display: flex; align-items: center; gap: 8px; padding: 10px 10px 8px; min-width: 0; }
+.ghead h2 { font-family: var(--font-display); font-size: 1.05rem; font-weight: 600; margin: 0; flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.count { font-family: var(--font-mono); font-size: 0.75rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.mini { min-width: 30px; height: 30px; padding: 0 8px; border: 1px solid var(--line); border-radius: 8px; background: transparent; color: var(--muted); font-size: 0.8rem; line-height: 1; }
+.mini:hover:not(:disabled) { background: var(--hover); color: var(--fg); }
+.mini:disabled { opacity: 0.35; cursor: default; }
+.mini.warn { color: var(--danger); border-color: var(--danger); }
+.sites { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.sites li { display: flex; align-items: center; gap: 4px; min-width: 0; }
+.site { flex: 1; min-width: 0; display: flex; align-items: center; gap: 12px; padding: 8px 10px; border-radius: 9px; color: inherit; text-decoration: none; }
+.site:hover { background: var(--hover); }
+.tile { flex: none; width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.25);
+  background: linear-gradient(160deg, hsl(var(--h) 78% 62%), hsl(calc(var(--h) + 26) 72% 45%)); box-shadow: inset 0 1px 0 rgba(255,255,255,0.38); }
+.stext { min-width: 0; display: flex; flex-direction: column; }
+.stitle { font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sdom { font-family: var(--font-mono); font-size: 0.72rem; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.editing .site .stitle::after { content: " ✎"; color: var(--muted); font-weight: 400; }
+.rowbtns { display: flex; gap: 4px; padding-right: 4px; }
+.addrow { width: 100%; margin-top: 6px; border: 0; background: none; text-align: left; padding: 8px 12px; color: var(--muted); border-radius: 9px; }
+.addrow:hover { background: var(--hover); color: var(--fg); }
+.gempty { padding: 6px 12px 10px; color: var(--muted); font-size: 0.9rem; }
+.empty { text-align: center; padding: 40px 8px; color: var(--muted); }
+.empty h2 { font-family: var(--font-display); color: var(--fg); margin: 0 0 8px; font-size: 1.25rem; }
+.drawer .search input { background: color-mix(in srgb, var(--card) var(--panel-a), transparent); }
+.drawer .btn { background: color-mix(in srgb, var(--card) var(--panel-a), transparent); }
+.drawer .btn:hover { background: var(--hover); }
+.drawer .btn.primary { background: var(--accent); }
+.drawer .btn.primary:hover { background: var(--accent); }
+.bkrow { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 22px; }
+.bkmsg { font-size: 0.82rem; color: var(--muted); margin-top: 8px; min-height: 1.2em; }
+.dfoot { margin-top: 24px; display: flex; flex-direction: column; gap: 4px; color: var(--muted); font-size: 0.82rem; }
+.dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--muted); margin-right: 6px; }
+.dot.cloud { background: #2f9e62; }
+
+/* ---------- modal ---------- */
+.overlay { position: fixed; inset: 0; background: rgba(8, 12, 10, 0.55); display: grid; place-items: center; padding: 16px; z-index: 30; }
+.modal { width: 100%; max-width: 440px; background: var(--card); color: var(--fg); border: 1px solid var(--line); border-radius: 14px; padding: 20px; max-height: 100%; overflow: auto; text-shadow: none; }
+.modal h3 { font-family: var(--font-display); margin: 0 0 14px; font-size: 1.2rem; }
+.field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+.field label, .flabel2 { font-size: 0.82rem; color: var(--muted); font-weight: 500; }
+.field input, .field select { height: 42px; padding: 0 12px; border: 1px solid var(--line); border-radius: 9px; background: var(--bg); width: 100%; min-width: 0; }
+.err { color: var(--danger); font-size: 0.85rem; min-height: 1.2em; margin: -4px 0 8px; }
+.mfoot { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; }
+.mfoot .left { margin-right: auto; }
+.qlist { list-style: none; margin: 6px 0 14px; padding: 0; display: flex; flex-direction: column; gap: 6px; max-height: 200px; overflow: auto; }
+.qlist li { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 9px; font-size: 0.9rem; }
+.qlist li span { min-width: 0; overflow-wrap: anywhere; }
+.qlist .qempty { color: var(--muted); border-style: dashed; }
+.swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(86px, 1fr)); gap: 10px; margin: 6px 0 14px; }
+.sw { display: flex; flex-direction: column; gap: 6px; padding: 6px; border: 2px solid var(--line); border-radius: 12px; background: var(--bg); }
+.sw[aria-pressed="true"] { border-color: var(--accent); }
+.swp { height: 44px; border-radius: 8px; border: 1px solid var(--line); background-color: var(--hero-base); background-size: cover; background-position: center; }
+.swn { font-size: 0.78rem; color: var(--muted); }
+.hint { font-size: 0.82rem; color: var(--muted); margin: -6px 0 14px; }
+.fileline { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 8px; }
+.fileline input[type="file"] { max-width: 100%; min-width: 0; font-size: 0.85rem; }
+
+/* ---------- tema kaca ala iOS ---------- */
+.ghost { border: 0; background: rgba(255,255,255,0.16); backdrop-filter: blur(24px) saturate(1.8); -webkit-backdrop-filter: blur(24px) saturate(1.8);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.3), 0 6px 20px rgba(0,0,0,0.18); }
+.ghost:hover { background: rgba(255,255,255,0.26); }
+.pins { width: min(100%, 720px); display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 32px; }
+.pinchip { position: relative; overflow: hidden; isolation: isolate; height: 54px; padding: 0 22px 0 9px; gap: 12px; border: 0; border-radius: 999px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.26), rgba(255,255,255,0.09));
+  backdrop-filter: blur(28px) saturate(1.9); -webkit-backdrop-filter: blur(28px) saturate(1.9);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.55), inset 0 0 0 1px rgba(255,255,255,0.2), 0 10px 28px rgba(0,0,0,0.28); }
+.pinchip::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 50%; z-index: -1; pointer-events: none;
+  background: linear-gradient(180deg, rgba(255,255,255,0.3), rgba(255,255,255,0)); }
+.pinchip::after { content: ""; position: absolute; top: 0; bottom: 0; left: -70%; width: 45%; z-index: -1; pointer-events: none;
+  background: linear-gradient(100deg, transparent, rgba(255,255,255,0.5), transparent); transform: skewX(-18deg); }
+.pinchip:hover { background: linear-gradient(180deg, rgba(255,255,255,0.36), rgba(255,255,255,0.15)); }
+.pinchip .tile { width: 36px; height: 36px; border-radius: 50%; font-size: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.45); }
+.pinchip .pt { font-size: 1rem; font-weight: 600; letter-spacing: -0.01em; color: #fff; text-shadow: 0 1px 8px rgba(0,0,0,0.45); }
+@media (prefers-reduced-motion: no-preference) {
+  .pinchip { transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), background 0.2s, box-shadow 0.25s; }
+  .pinchip:hover { transform: translateY(-2px) scale(1.04); box-shadow: inset 0 1px 0 rgba(255,255,255,0.6), inset 0 0 0 1px rgba(255,255,255,0.28), 0 16px 34px rgba(0,0,0,0.34); }
+  .pinchip:hover::after { left: 125%; transition: left 0.75s ease; }
+  .pinchip:active { transform: scale(0.95); transition-duration: 0.08s; }
+}
+.pinchip:active { transform: scale(0.95); }
+.todo, .modal { background: color-mix(in srgb, var(--card) var(--panel-a), transparent); backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur);
+  border: 0; box-shadow: var(--lift), inset 0 0 0 1px var(--edge); }
+.todo { border-radius: 24px; padding: 16px; }
+.modal { border-radius: 26px; }
+.overlay { background: rgba(8,12,10,0.28); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+.btn { border: 0; border-radius: 999px; box-shadow: inset 0 0 0 1px var(--edge); }
+.btn.danger { box-shadow: inset 0 0 0 1px var(--danger); }
+.btn[aria-pressed="true"] { box-shadow: inset 0 0 0 2px var(--accent); }
+.btn.primary { box-shadow: none; }
+.mini { border-radius: 999px; }
+.search input { border: 0; border-radius: 14px; box-shadow: inset 0 0 0 1px var(--edge); }
+.field input, .field select, .tadd { background: color-mix(in srgb, var(--bg) 50%, transparent); border: 0; border-radius: 12px; box-shadow: inset 0 0 0 1px var(--edge); }
+.site:hover { background: color-mix(in srgb, var(--fg) 8%, transparent); }
+.bkta { width: 100%; min-height: 160px; padding: 10px 12px; border: 0; border-radius: 12px; background: color-mix(in srgb, var(--bg) 50%, transparent);
+  box-shadow: inset 0 0 0 1px var(--edge); font-family: var(--font-mono); font-size: 0.78rem; color: inherit; resize: vertical; margin-bottom: 8px; }
+.sw { border-radius: 16px; }
+.swp { border-radius: 11px; }
+
+/* jam ala layar kunci iOS, teks hero, dan baris situs berbentuk kapsul */
+.clockbig { font-family: var(--font-display); font-weight: 700; letter-spacing: -0.05em; text-shadow: none;
+  background: linear-gradient(180deg, #ffffff 15%, rgba(255,255,255,0.8) 100%); -webkit-background-clip: text; background-clip: text;
+  color: transparent; -webkit-text-fill-color: transparent; filter: drop-shadow(0 4px 22px rgba(0,0,0,0.32)); }
+.greet { font-weight: 600; letter-spacing: -0.02em; }
+.topdate { font-weight: 600; color: #fff; opacity: 0.92; }
+.qtext { font-weight: 600; letter-spacing: -0.01em; text-shadow: 0 1px 2px rgba(0,0,0,0.3), 0 2px 16px rgba(0,0,0,0.55); }
+.sites { gap: 6px; }
+.site { border-radius: 999px; padding: 8px 16px 8px 10px; background: color-mix(in srgb, var(--card) 32%, transparent);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.4), inset 0 0 0 1px var(--edge); }
+.site .tile { border-radius: 50%; }
+/* tugas sebagai sticky note yang menempel di beranda */
+:root { --note-1: #ffe97a; --note-2: #ffd84e; --note-ink: #3a2e05; --note-soft: rgba(58, 46, 5, 0.72); }
+.todo { top: 76px; bottom: auto; right: 22px; width: 268px; max-height: none; overflow: visible; padding: 22px 18px 16px; border-radius: 6px 6px 22px 6px;
+  color: var(--note-ink); background: linear-gradient(165deg, var(--note-1), var(--note-2)); backdrop-filter: none; -webkit-backdrop-filter: none;
+  box-shadow: 0 1px 1px rgba(0,0,0,0.15), 0 14px 28px rgba(0,0,0,0.32), inset 0 -22px 30px -24px rgba(120,80,0,0.35);
+  transform: rotate(1.8deg); transform-origin: 50% 0; }
+.todo::before { content: ""; position: absolute; top: -11px; left: 50%; width: 84px; height: 24px; margin-left: -42px; transform: rotate(-3deg);
+  background: rgba(255,255,255,0.5); box-shadow: 0 1px 3px rgba(0,0,0,0.2); pointer-events: none; }
+.todo h2 { font-family: "Caveat", var(--font-display); font-size: 1.75rem; font-weight: 700; line-height: 1; color: var(--note-ink); }
+.tcount { color: var(--note-soft); }
+.tlist { max-height: 36vh; overflow-y: auto; margin-bottom: 8px; }
+.tlist li:hover { background: rgba(58,46,5,0.08); }
+.tlist .t { font-family: "Caveat", var(--font-display); font-size: 1.3rem; font-weight: 500; line-height: 1.15; }
+.tlist .t.done { color: var(--note-soft); text-decoration-thickness: 2px; }
+.tlist .empty-li { color: var(--note-soft); font-family: "Caveat", var(--font-display); font-size: 1.2rem; }
+.todo .chk { border-color: var(--note-ink); }
+.todo .chk[aria-checked="true"] { background: var(--note-ink); border-color: var(--note-ink); }
+.todo .chk[aria-checked="true"]::after { border-color: var(--note-1); }
+.todo .xbtn { color: var(--note-soft); }
+.todo .xbtn:hover { background: rgba(58,46,5,0.12); color: var(--note-ink); }
+.todo .chk:focus-visible, .todo .xbtn:focus-visible, .tadd:focus-visible, .tclear:focus-visible { outline-color: var(--note-ink); }
+.tadd { background: rgba(255,255,255,0.5); color: var(--note-ink); box-shadow: inset 0 0 0 1px rgba(58,46,5,0.22); }
+.tadd::placeholder { color: var(--note-soft); }
+.tclear { color: var(--note-soft); }
+@media (prefers-reduced-motion: no-preference) {
+  .todo { transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); }
+  .todo:hover, .todo:focus-within { transform: rotate(0deg) translateY(-2px); }
+}
+@media (max-width: 1100px) { .todo { width: 232px; right: 14px; } }
+@media (max-width: 720px) { .todo { top: auto; bottom: 74px; right: 12px; width: min(300px, calc(100% - 24px)); } .tlist { max-height: 28vh; } }
+.thhr { display: inline-flex; align-items: center; gap: 8px; }
+.todo h2 { white-space: nowrap; font-size: 1.65rem; }
+.tcount { white-space: nowrap; }
+.tadd { font-size: 0.9rem; }
+.drawer-open #openSites, .drawer-open .bl { visibility: hidden; }
+.todo .mini { border: 0; box-shadow: inset 0 0 0 1px rgba(58,46,5,0.35); color: var(--note-ink); background: rgba(255,255,255,0.4); height: 26px; min-width: 0; padding: 0 12px; }
+.todo .mini:hover:not(:disabled) { background: rgba(255,255,255,0.7); color: var(--note-ink); }
+.tstat { margin-top: 8px; font-size: 0.72rem; color: var(--note-soft); font-weight: 500; overflow-wrap: anywhere; }
+.tby { font-family: var(--font-body); font-size: 0.68rem; font-weight: 500; color: var(--note-soft); }
+.ghost:active, .btn:active { transform: scale(0.96); }
+@media (prefers-reduced-motion: no-preference) {
+  .site { transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), background-color 0.15s; }
+  .site:hover { transform: scale(1.02); }
+  .site:active { transform: scale(0.97); }
+  .ghost, .btn { transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), background-color 0.15s; }
+  .ghost:hover { transform: scale(1.04); }
+}
+</style>
+
+<div class="bgl" id="bgLayer" aria-hidden="true"></div>
+<div class="scrim" aria-hidden="true"></div>
+
+<div class="stage" id="stage">
+  <div class="topbar">
+    <button class="ghost" id="openSites" type="button" aria-expanded="false" aria-controls="drawer">Situs</button>
+    <span class="topdate" id="topDate"></span>
+  </div>
+
+  <main class="center">
+    <div class="clockbig" id="clkHM">--:--</div>
+    <div class="greet" id="greet">Selamat datang</div>
+    <div class="pins" id="pins"></div>
+  </main>
+
+  <div class="bottom">
+    <div class="bl"><button class="ghost" id="themeBtn" type="button">Tampilan</button></div>
+    <div class="qwrap">
+      <p class="qtext" id="qText"></p>
+      <div class="qline">
+        <span id="qSrc"></span>
+        <button class="lnk" id="qNext" type="button">Ganti</button>
+        <button class="lnk" id="qEdit" type="button">Kata-kata</button>
+      </div>
+    </div>
+    <div class="br"><button class="ghost" id="todoBtn" type="button" aria-expanded="true" aria-controls="todoPop">Tugas</button></div>
+  </div>
+
+  <section class="todo" id="todoPop" aria-label="Daftar tugas">
+    <div class="thead"><h2 id="todoTitle">Tugas</h2><span class="thhr"><span class="tcount" id="todoCount"></span><button class="mini" id="teamBtn" type="button" hidden>Tim</button></span></div>
+    <ul class="tlist" id="todoList"></ul>
+    <input class="tadd" id="todoAdd" type="text" placeholder="Tugas baru, lalu Enter" maxlength="200" autocomplete="off" aria-label="Tambah tugas">
+    <button class="tclear" id="todoClear" type="button" hidden>Hapus yang selesai</button>
+    <div class="tstat" id="todoStat" role="status"></div>
+  </section>
+</div>
+
+<div class="dim" id="dim"></div>
+<aside class="drawer" id="drawer" aria-label="Situs">
+  <div class="dhead">
+    <h1>Situs</h1>
+    <button class="btn" id="closeSites" type="button">Tutup</button>
+  </div>
+  <div class="search">
+    <input id="q" type="search" placeholder="Cari situs atau grup" autocomplete="off" aria-label="Cari situs atau grup">
+    <kbd aria-hidden="true">/</kbd>
+  </div>
+  <div class="actions">
+    <button class="btn primary" id="addSite" type="button">Tambah situs</button>
+    <button class="btn" id="addGroup" type="button">Grup baru</button>
+    <button class="btn" id="editToggle" type="button" aria-pressed="false">Ubah</button>
+  </div>
+  <div id="note"></div>
+  <div id="main"></div>
+  <div class="bkrow">
+    <button class="btn" id="bkSave" type="button">Cadangkan</button>
+    <button class="btn" id="bkLoad" type="button">Pulihkan</button>
+    <button class="btn" id="bkCopy" type="button">Salin teks</button>
+    <button class="btn" id="bkPaste" type="button">Tempel teks</button>
+    <input type="file" id="bkFile" accept=".json,application/json" hidden>
+  </div>
+  <div class="bkmsg" id="bkMsg" role="status"></div>
+  <div class="dfoot">
+    <span><span class="dot" id="dot"></span><span id="status">Memuat</span></span>
+    <span>Enter membuka hasil pertama. Esc menutup panel.</span>
+  </div>
+</aside>
+<div id="modalRoot"></div>
+
+<script>
+(function () {
+  "use strict";
+  var LS_KEY = "peluncur-situs-v1";
+  var LS_PHOTO = "peluncur-foto-v1";
+  var LS_STICKY = "peluncur-sticky-v1";
+  var state = null;
+  var editing = false;
+  var showNote = false;
+  var dbDoc = null, assetsNs = null, dlNs = null, saving = false, dirty = false, saveTimer = null, fromLocal = false;
+  var DEF_BG = { id: "fajar", color: "#3b5bdb" };
+
+  function rid() { return Math.random().toString(36).slice(2, 9); }
+  function clone(o) { return JSON.parse(JSON.stringify(o)); }
+  function pad2(n) { return (n < 10 ? "0" : "") + n; }
+  function today() { var d = new Date(); return d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate()); }
+
+  function starter() {
+    function s(t, u, p) { var o = { id: rid(), title: t, url: u }; if (p) o.pin = true; return o; }
+    return {
+      groups: [
+        { id: rid(), name: "Komunikasi", sites: [s("Gmail", "https://mail.google.com", 1), s("WhatsApp Web", "https://web.whatsapp.com")] },
+        { id: rid(), name: "Kerja", sites: [s("Google Drive", "https://drive.google.com", 1),s("Google Calendar", "https://calendar.google.com"), s("Notion", "https://www.notion.so")] },
+        { id: rid(), name: "Pemrograman", sites: [s("GitHub", "https://github.com", 1),s("MDN Web Docs", "https://developer.mozilla.org")] },
+        { id: rid(), name: "Hiburan", sites: [s("YouTube", "https://www.youtube.com", 1),s("Spotify", "https://open.spotify.com")] }
+      ],
+      quotes: [], bg: clone(DEF_BG), name: "", todos: []
+    };
+  }
+
+  function normUrl(s) {
+    s = String(s || "").trim();
+    if (!s) return null;
+    if (!/^[a-z][a-z0-9+.-]*:/i.test(s)) s = "https://" + s;
+    try { var u = new URL(s); if (u.protocol !== "http:" && u.protocol !== "https:") return null; if (u.hostname.indexOf(".") < 0 && u.hostname !== "localhost") return null; return u.href; } catch (e) { return null; }
+  }
+  function host(u) { try { return new URL(u).hostname.replace(/^www\./, ""); } catch (e) { return u; } }
+  function hue(str) { var h = 0; for (var i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) % 360; return h; }
+
+  function norm(d) {
+    var out = { groups: [], quotes: [], bg: clone(DEF_BG), name: "", todos: [] };
+    if (!d) return out;
+    if (typeof d.name === "string") out.name = d.name.trim().slice(0, 40);
+    if (Array.isArray(d.quotes)) d.quotes.forEach(function (q) {
+      if (q && typeof q.text === "string" && q.text.trim()) out.quotes.push({ id: String(q.id || rid()), text: q.text.slice(0, 200) });
+    });
+    if (Array.isArray(d.todos)) d.todos.slice(0, 100).forEach(function (t) {
+      if (t && typeof t.text === "string" && t.text.trim()) out.todos.push({ id: String(t.id || rid()), text: t.text.slice(0, 200), done: !!t.done });
+    });
+    if (d.bg && typeof d.bg.id === "string") {
+      out.bg = { id: d.bg.id.slice(0, 20), color: /^#[0-9a-f]{6}$/i.test(d.bg.color || "") ? d.bg.color : DEF_BG.color };
+      if (typeof d.bg.asset === "string" && /^[0-9a-f]{32}$/i.test(d.bg.asset)) out.bg.asset = d.bg.asset;
+    }
+    if (!Array.isArray(d.groups)) return out;
+    d.groups.forEach(function (g) {
+      if (!g || typeof g.name !== "string") return;
+      var grp = { id: String(g.id || rid()), name: g.name.slice(0, 80), sites: [] };
+      (Array.isArray(g.sites) ? g.sites : []).forEach(function (x) {
+        var u = x && normUrl(x.url);
+        if (u) {
+          var site = { id: String(x.id || rid()), title: String(x.title || host(u)).slice(0, 120), url: u };
+          if (x.pin) site.pin = true;
+          grp.sites.push(site);
+        }
+      });
+      out.groups.push(grp);
+    });
+    return out;
+  }
+
+  function lsGet() { try { var r = localStorage.getItem(LS_KEY); return r ? norm(JSON.parse(r)) : null; } catch (e) { return null; } }
+  function lsSet() { try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch (e) {} }
+
+  function setStatus(kind) {
+    var dot = document.getElementById("dot"), st = document.getElementById("status");
+    if (kind === "cloud") { dot.className = "dot cloud"; st.textContent = "Tersimpan di akun Anda dan tersinkron"; }
+    else if (kind === "error") { dot.className = "dot"; st.textContent = "Gagal menyimpan ke akun. Data aman di browser ini."; }
+    else { dot.className = "dot"; st.textContent = "Tersimpan di browser ini saja"; }
+  }
+
+  async function flush() {
+    if (saving) { saveTimer = setTimeout(flush, 300); return; }
+    if (!dbDoc) { setStatus("local"); return; }
+    saving = true; dirty = false;
+    try {
+      var body = clone(state); body.updatedAt = Date.now();
+      await dbDoc.set(body); setStatus("cloud");
+    } catch (e) { setStatus("error"); }
+    saving = false;
+  }
+  function touch() {
+    dirty = true; showNote = false; fromLocal = true;
+    lsSet(); renderAll();
+    clearTimeout(saveTimer); saveTimer = setTimeout(flush, 400);
+  }
+
+  function findGroup(id) { return state.groups.filter(function (g) { return g.id === id; })[0]; }
+  function move(arr, i, d) { var j = i + d; if (j < 0 || j >= arr.length) return; var t = arr[i]; arr[i] = arr[j]; arr[j] = t; }
+
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+  function btn(cls, text, label, fn) {
+    var b = el("button", cls, text); b.type = "button"; if (label) b.setAttribute("aria-label", label); b.addEventListener("click", fn); return b;
+  }
+  function confirmBtn(label, onYes) {
+    var b = el("button", "mini", "×"); b.type = "button"; b.setAttribute("aria-label", label);
+    var t = null;
+    b.addEventListener("click", function () {
+      if (b.classList.contains("warn")) { clearTimeout(t); onYes(); return; }
+      b.classList.add("warn"); b.textContent = "Hapus?";
+      t = setTimeout(function () { b.classList.remove("warn"); b.textContent = "×"; }, 3000);
+    });
+    return b;
+  }
+  function setText(id, v) { var n = document.getElementById(id); if (n.textContent !== v) n.textContent = v; }
+
+  /* ---------- daftar situs (panel) ---------- */
+  function render() {
+    var q = document.getElementById("q").value.trim().toLowerCase();
+    var main = document.getElementById("main");
+    main.textContent = "";
+    main.className = editing ? "editing" : "";
+
+    var note = document.getElementById("note");
+    note.textContent = "";
+    if (showNote) {
+      var n = el("div", "note");
+      n.appendChild(el("span", null, "Ini contoh isi awal. Ubah, hapus, atau tambah situs Anda sendiri."));
+      n.appendChild(btn("", "Mengerti", null, function () { showNote = false; render(); }));
+      note.appendChild(n);
+    }
+
+    if (!state.groups.length) {
+      var em = el("div", "empty");
+      em.appendChild(el("h2", null, "Belum ada grup"));
+      em.appendChild(el("p", null, "Buat grup pertama, lalu isi dengan situs yang sering Anda buka."));
+      em.appendChild(btn("btn primary", "Buat grup", null, function () { openGroupModal(null); }));
+      main.appendChild(em);
+      return;
+    }
+
+    var grid = el("div", "grid");
+    var shown = 0;
+    state.groups.forEach(function (g, gi) {
+      var gMatch = q && g.name.toLowerCase().indexOf(q) >= 0;
+      var sites = g.sites.filter(function (s) {
+        if (!q || gMatch) return true;
+        return s.title.toLowerCase().indexOf(q) >= 0 || s.url.toLowerCase().indexOf(q) >= 0;
+      });
+      if (q && !sites.length) return;
+      shown++;
+
+      var card = el("section", "group");
+      var head = el("div", "ghead");
+      head.appendChild(el("h2", null, g.name));
+      head.appendChild(el("span", "count", String(g.sites.length)));
+      if (editing) {
+        var up = btn("mini", "↑", "Geser grup ke atas", function () { move(state.groups, gi, -1); touch(); });
+        var dn = btn("mini", "↓", "Geser grup ke bawah", function () { move(state.groups, gi, 1); touch(); });
+        up.disabled = gi === 0; dn.disabled = gi === state.groups.length - 1;
+        head.appendChild(up); head.appendChild(dn);
+        head.appendChild(btn("mini", "Nama", "Ganti nama grup " + g.name, function () { openGroupModal(g.id); }));
+        head.appendChild(confirmBtn("Hapus grup " + g.name, function () {
+          state.groups = state.groups.filter(function (x) { return x.id !== g.id; }); touch();
+        }));
+      }
+      card.appendChild(head);
+
+      if (!sites.length) {
+        card.appendChild(el("div", "gempty", "Grup ini masih kosong."));
+      } else {
+        var ul = el("ul", "sites");
+        sites.forEach(function (s) {
+          var li = el("li");
+          var a = el("a", "site"); a.href = s.url; a.target = "_blank"; a.rel = "noopener noreferrer";
+          var tile = el("span", "tile", (s.title.trim().charAt(0) || "?").toUpperCase());
+          tile.style.setProperty("--h", String(hue(host(s.url))));
+          tile.setAttribute("aria-hidden", "true");
+          var tx = el("span", "stext");
+          tx.appendChild(el("span", "stitle", s.title));
+          tx.appendChild(el("span", "sdom", host(s.url)));
+          a.appendChild(tile); a.appendChild(tx);
+          a.addEventListener("click", function (e) { if (editing) { e.preventDefault(); openSiteModal(g.id, s.id); } });
+          li.appendChild(a);
+          var pb = btn("mini pin", s.pin ? "★" : "☆", (s.pin ? "Lepas dari beranda: " : "Pin ke beranda: ") + s.title, function () {
+            if (s.pin) delete s.pin; else s.pin = true; touch();
+          });
+          pb.setAttribute("aria-pressed", String(!!s.pin));
+          li.appendChild(pb);
+          if (editing && !q) {
+            var si = g.sites.indexOf(s);
+            var rb = el("div", "rowbtns");
+            var u2 = btn("mini", "↑", "Geser " + s.title + " ke atas", function () { move(g.sites, si, -1); touch(); });
+            var d2 = btn("mini", "↓", "Geser " + s.title + " ke bawah", function () { move(g.sites, si, 1); touch(); });
+            u2.disabled = si === 0; d2.disabled = si === g.sites.length - 1;
+            rb.appendChild(u2); rb.appendChild(d2);
+            rb.appendChild(confirmBtn("Hapus " + s.title, function () { g.sites = g.sites.filter(function (x) { return x.id !== s.id; }); touch(); }));
+            li.appendChild(rb);
+          }
+          ul.appendChild(li);
+        });
+        card.appendChild(ul);
+      }
+      if (!q) card.appendChild(btn("addrow", "+ Tambah situs", null, function () { openSiteModal(g.id, null); }));
+      grid.appendChild(card);
+    });
+    if (q && !shown) {
+      var none = el("div", "empty");
+      none.appendChild(el("h2", null, "Tidak ada hasil"));
+      none.appendChild(el("p", null, "Tidak ada situs atau grup yang cocok dengan “" + q + "”."));
+      main.appendChild(none);
+    } else {
+      main.appendChild(grid);
+    }
+  }
+
+  /* ---------- modal ---------- */
+  function closeModal() { document.getElementById("modalRoot").textContent = ""; document.removeEventListener("keydown", modalKey, true); }
+  function modalKey(e) { if (e.key === "Escape") { e.stopPropagation(); closeModal(); } }
+  function openModal(title, body, onSubmit, opts) {
+    opts = opts || {};
+    var root = document.getElementById("modalRoot");
+    root.textContent = "";
+    var ov = el("div", "overlay");
+    ov.addEventListener("mousedown", function (e) { if (e.target === ov) closeModal(); });
+    var m = el("form", "modal"); m.noValidate = true;
+    m.appendChild(el("h3", null, title));
+    m.appendChild(body);
+    var err = el("div", "err"); err.setAttribute("role", "alert");
+    m.appendChild(err);
+    var foot = el("div", "mfoot");
+    if (opts.onDelete) {
+      var del = el("button", "btn left", "Hapus"); del.type = "button";
+      var armed = false, dt = null;
+      del.addEventListener("click", function () {
+        if (armed) { clearTimeout(dt); opts.onDelete(); return; }
+        armed = true; del.classList.add("danger"); del.textContent = "Yakin hapus?";
+        dt = setTimeout(function () { armed = false; del.classList.remove("danger"); del.textContent = "Hapus"; }, 3000);
+      });
+      foot.appendChild(del);
+    }
+    if (!opts.noCancel) foot.appendChild(btn("btn", "Batal", null, closeModal));
+    var ok = el("button", "btn primary", opts.okLabel || "Simpan"); ok.type = "submit";
+    foot.appendChild(ok);
+    m.appendChild(foot);
+    m.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var msg = onSubmit();
+      if (msg) err.textContent = msg; else closeModal();
+    });
+    ov.appendChild(m); root.appendChild(ov);
+    document.addEventListener("keydown", modalKey, true);
+    var first = m.querySelector("input[type=text], input:not([type])"); if (first) first.focus();
+  }
+  function field(id, label, input) {
+    var f = el("div", "field"); var l = el("label", null, label); l.htmlFor = id; input.id = id; f.appendChild(l); f.appendChild(input); return f;
+  }
+  function input(type, value, ph) { var i = el("input"); i.type = type; i.value = value || ""; if (ph) i.placeholder = ph; i.autocomplete = "off"; return i; }
+
+  function openGroupModal(gid) {
+    var g = gid ? findGroup(gid) : null;
+    var body = el("div");
+    var name = input("text", g ? g.name : "", "Contoh: Kerja");
+    body.appendChild(field("gname", "Nama grup", name));
+    openModal(g ? "Ganti nama grup" : "Grup baru", body, function () {
+      var v = name.value.trim();
+      if (!v) return "Isi nama grup.";
+      if (g) g.name = v.slice(0, 80); else state.groups.push({ id: rid(), name: v.slice(0, 80), sites: [] });
+      touch(); return "";
+    }, { okLabel: g ? "Simpan" : "Buat grup" });
+  }
+
+  function openSiteModal(gid, sid) {
+    if (!state.groups.length) { openGroupModal(null); return; }
+    var g0 = gid ? findGroup(gid) : state.groups[0];
+    var s0 = sid ? g0.sites.filter(function (x) { return x.id === sid; })[0] : null;
+    var body = el("div");
+    var url = input("text", s0 ? s0.url : "", "contoh: github.com");
+    var title = input("text", s0 ? s0.title : "", "Boleh dikosongkan");
+    var sel = el("select");
+    state.groups.forEach(function (g) { var o = el("option", null, g.name); o.value = g.id; if (g.id === g0.id) o.selected = true; sel.appendChild(o); });
+    var nw = el("option", null, "+ Grup baru…"); nw.value = "__new"; sel.appendChild(nw);
+    var newName = input("text", "", "Nama grup baru");
+    var newField = field("ngname", "Nama grup baru", newName); newField.hidden = true;
+    sel.addEventListener("change", function () { newField.hidden = sel.value !== "__new"; if (!newField.hidden) newName.focus(); });
+    body.appendChild(field("surl", "Alamat situs", url));
+    body.appendChild(field("stitle", "Nama tampilan", title));
+    body.appendChild(field("sgrp", "Grup", sel));
+    body.appendChild(newField);
+    openModal(s0 ? "Ubah situs" : "Tambah situs", body, function () {
+      var u = normUrl(url.value);
+      if (!u) return "Alamat tidak valid. Contoh: github.com atau https://github.com/anda.";
+      var target;
+      if (sel.value === "__new") {
+        var nn = newName.value.trim(); if (!nn) return "Isi nama grup baru.";
+        target = { id: rid(), name: nn.slice(0, 80), sites: [] }; state.groups.push(target);
+      } else target = findGroup(sel.value);
+      var t = title.value.trim() || host(u);
+      if (s0) {
+        if (target.id === g0.id) { s0.title = t.slice(0, 120); s0.url = u; }
+        else {
+          g0.sites = g0.sites.filter(function (x) { return x.id !== s0.id; });
+          var mv = { id: s0.id, title: t.slice(0, 120), url: u }; if (s0.pin) mv.pin = true;
+          target.sites.push(mv);
+        }
+      } else target.sites.push({ id: rid(), title: t.slice(0, 120), url: u });
+      touch(); return "";
+    }, { okLabel: s0 ? "Simpan" : "Tambah", onDelete: s0 ? function () { g0.sites = g0.sites.filter(function (x) { return x.id !== s0.id; }); closeModal(); touch(); } : null });
+  }
+
+  /* ---------- latar ---------- */
+  var PRESETS = [
+    { id: "fajar", name: "Fajar", css: "radial-gradient(120% 80% at 80% 100%, rgba(242,166,90,0.7), transparent 60%), linear-gradient(165deg, #1d2b53 0%, #6a4a85 55%, #b8647a 100%)" },
+    { id: "laut", name: "Laut", css: "radial-gradient(110% 80% at 15% 100%, rgba(47,181,154,0.6), transparent 60%), linear-gradient(165deg, #04202e 0%, #0b4f63 60%, #1b8a8f 100%)" },
+    { id: "hutan", name: "Hutan", css: "radial-gradient(100% 80% at 85% 100%, rgba(201,183,47,0.45), transparent 60%), linear-gradient(165deg, #0b2218 0%, #1f5b3d 60%, #4d8a52 100%)" },
+    { id: "malam", name: "Malam", css: "radial-gradient(90% 70% at 20% 0%, rgba(110,80,200,0.5), transparent 60%), linear-gradient(170deg, #080c20 0%, #14205a 60%, #2b2a78 100%)" },
+    { id: "senja", name: "Senja", css: "radial-gradient(120% 80% at 50% 110%, rgba(240,138,75,0.7), transparent 60%), linear-gradient(170deg, #26103a 0%, #8c3a63 60%, #c9566a 100%)" },
+    { id: "batu", name: "Batu", css: "linear-gradient(165deg, #10141a 0%, #232c37 60%, #3d4b5c 100%)" }
+  ];
+  function presetCss(id) { var r = PRESETS.filter(function (p) { return p.id === id; })[0]; return r ? r.css : null; }
+  function colorCss(c) { return "linear-gradient(165deg, color-mix(in srgb, " + c + " 55%, #000) 0%, color-mix(in srgb, " + c + " 28%, #000) 100%)"; }
+  function applyBg() {
+    var layer = document.getElementById("bgLayer"), b = state.bg || DEF_BG;
+    if (b.id === "foto" && b.asset) {
+      var url = "/_blob/" + b.asset;
+      var im = new Image();
+      im.onerror = function () { layer.style.backgroundImage = presetCss(DEF_BG.id); };
+      im.src = url;
+      layer.style.backgroundImage = "url(\"" + url + "\")";
+    } else if (b.id === "fotolokal") {
+      var lp = localPhoto();
+      layer.style.backgroundImage = lp ? "url(\"" + lp + "\")" : presetCss(DEF_BG.id);
+    } else if (b.id === "warna") {
+      layer.style.backgroundImage = colorCss(b.color);
+    } else {
+      layer.style.backgroundImage = presetCss(b.id) || presetCss(DEF_BG.id);
+    }
+  }
+  function uploadMsg(e) {
+    var c = e && e.code;
+    if (c === "too_large") return "Foto terlalu besar. Maksimal 20 MB.";
+    if (c === "unsupported_type") return "Format tidak didukung. Pakai PNG, JPG, WebP, atau GIF.";
+    if (c === "quota_or_state") return "Kuota penyimpanan halaman ini penuh.";
+    if (c === "rate_limited") return "Terlalu sering. Tunggu sebentar lalu coba lagi.";
+    return "Foto gagal diunggah. Coba lagi.";
+  }
+  function openThemeModal() {
+    var body = el("div");
+    var nameIn = input("text", state.name, "Nama panggilan Anda"); nameIn.maxLength = 40;
+    nameIn.addEventListener("input", function () { state.name = nameIn.value.trim().slice(0, 40); touch(); });
+    body.appendChild(field("myname", "Nama untuk sapaan", nameIn));
+
+    body.appendChild(el("div", "flabel2", "Latar"));
+    var sw = el("div", "swatches");
+    var col = input("color", state.bg.color || DEF_BG.color); col.style.padding = "3px";
+    var msg = el("div", "hint");
+    function build() {
+      sw.textContent = "";
+      PRESETS.forEach(function (p) { addSw(p.id, p.name, p.css); });
+      if (state.bg.asset) addSw("foto", "Foto saya", "url(\"/_blob/" + state.bg.asset + "\")");
+      var lp2 = localPhoto();
+      if (lp2) addSw("fotolokal", "Foto browser ini", "url(\"" + lp2 + "\")");
+    }
+    function addSw(id, name, css) {
+      var b = el("button", "sw"); b.type = "button";
+      b.setAttribute("aria-pressed", String(state.bg.id === id));
+      var pv = el("span", "swp"); pv.style.backgroundImage = css;
+      b.appendChild(pv); b.appendChild(el("span", "swn", name));
+      b.addEventListener("click", function () { state.bg = { id: id, color: state.bg.color, asset: state.bg.asset }; touch(); build(); });
+      sw.appendChild(b);
+    }
+    build();
+    col.addEventListener("input", function () { state.bg = { id: "warna", color: col.value, asset: state.bg.asset }; touch(); build(); });
+    body.appendChild(sw);
+    body.appendChild(field("bgcol", "Atau pilih satu warna", col));
+
+    body.appendChild(el("div", "flabel2", "Foto sendiri"));
+    var line = el("div", "fileline");
+    if (assetsNs) {
+      var fi = el("input"); fi.type = "file"; fi.id = "bgfile"; fi.accept = "image/png,image/jpeg,image/webp,image/gif";
+      fi.setAttribute("aria-label", "Pilih foto latar");
+      fi.addEventListener("change", async function () {
+        var f = fi.files && fi.files[0]; if (!f) return;
+        msg.textContent = "Mengunggah…";
+        try {
+          var r = await assetsNs.upload(f);
+          var old = state.bg.asset;
+          state.bg = { id: "foto", color: state.bg.color, asset: r.id };
+          touch(); build();
+          msg.textContent = "Foto dipasang.";
+          if (old && old !== r.id) { clearTimeout(saveTimer); await flush(); try { await assetsNs.delete(old); } catch (e2) {} }
+        } catch (e) { msg.textContent = uploadMsg(e); }
+        fi.value = "";
+      });
+      line.appendChild(fi);
+      if (state.bg.asset) {
+        line.appendChild(btn("btn", "Hapus foto", null, async function () {
+          var old = state.bg.asset; state.bg = clone(DEF_BG); touch(); build();
+          clearTimeout(saveTimer); await flush();
+          try { await assetsNs.delete(old); msg.textContent = "Foto dihapus."; } catch (e) { msg.textContent = "Foto dilepas dari latar."; }
+        }));
+      }
+    } else {
+      var lf = el("input"); lf.type = "file"; lf.id = "bgfile"; lf.accept = "image/png,image/jpeg,image/webp,image/gif";
+      lf.setAttribute("aria-label", "Pilih foto latar");
+      lf.addEventListener("change", function () {
+        var f = lf.files && lf.files[0]; if (!f) return;
+        msg.textContent = "Memproses…";
+        photoToDataUrl(f).then(function (d) {
+          try { localStorage.setItem(LS_PHOTO, d); } catch (e) { msg.textContent = "Penyimpanan browser penuh."; return; }
+          state.bg = { id: "fotolokal", color: state.bg.color }; touch(); build();
+          msg.textContent = "Foto dipasang. Foto ini hanya tersimpan di browser ini.";
+        }).catch(function () { msg.textContent = "Foto gagal diproses. Pakai PNG, JPG, atau WebP."; });
+        lf.value = "";
+      });
+      line.appendChild(lf);
+    }
+    if (localPhoto()) {
+      line.appendChild(btn("btn", "Hapus foto browser ini", null, function () {
+        try { localStorage.removeItem(LS_PHOTO); } catch (e) {}
+        if (state.bg.id === "fotolokal") { state.bg = clone(DEF_BG); touch(); }
+        build(); msg.textContent = "Foto dihapus.";
+      }));
+    }
+    body.appendChild(line);
+    body.appendChild(msg);
+    openModal("Tampilan", body, function () { return ""; }, { okLabel: "Selesai", noCancel: true });
+  }
+
+  /* ---------- foto lokal ---------- */
+  function localPhoto() {
+    try { var d = localStorage.getItem(LS_PHOTO); return d && d.indexOf("data:image/") === 0 ? d : null; } catch (e) { return null; }
+  }
+  function photoToDataUrl(file) {
+    return new Promise(function (res, rej) {
+      if (!file.type || file.type.indexOf("image/") !== 0) { rej(new Error("type")); return; }
+      var fr = new FileReader();
+      fr.onerror = rej;
+      fr.onload = function () {
+        var im = new Image();
+        im.onerror = rej;
+        im.onload = function () {
+          var w = im.naturalWidth, h = im.naturalHeight, k = Math.min(1, 1920 / Math.max(w, h));
+          var c = document.createElement("canvas");
+          c.width = Math.max(1, Math.round(w * k)); c.height = Math.max(1, Math.round(h * k));
+          c.getContext("2d").drawImage(im, 0, 0, c.width, c.height);
+          try { res(c.toDataURL("image/jpeg", 0.82)); } catch (e) { rej(e); }
+        };
+        im.src = String(fr.result);
+      };
+      fr.readAsDataURL(file);
+    });
+  }
+
+  /* ---------- cadangan ---------- */
+  function bkSay(t) { document.getElementById("bkMsg").textContent = t; }
+  async function doBackup() {
+    var name = "peluncur-cadangan-" + today() + ".json";
+    var payload = { app: "peluncur-situs", v: 1, exportedAt: new Date().toISOString(), data: clone(state) };
+    var ph = localPhoto(); if (ph) payload.photo = ph;
+    var text = JSON.stringify(payload, null, 2);
+    try {
+      if (dlNs) { await dlNs.save({ filename: name, data: text }); bkSay("Cadangan siap disimpan."); }
+      else {
+        var url = URL.createObjectURL(new Blob([text], { type: "application/json" }));
+        var a = document.createElement("a"); a.href = url; a.download = name;
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(function () { URL.revokeObjectURL(url); }, 1500);
+        bkSay("Cadangan diunduh.");
+      }
+    } catch (e) { bkSay(e && e.code === "declined" ? "Dibatalkan." : "Cadangan gagal disimpan. Coba lagi."); }
+  }
+  function openRestore(obj) {
+    var d = norm(obj.data), sites = 0;
+    d.groups.forEach(function (g) { sites += g.sites.length; });
+    var body = el("div");
+    body.appendChild(el("p", null, "Isi cadangan: " + d.groups.length + " grup, " + sites + " situs, " + d.todos.length + " tugas, " + d.quotes.length + " kata-kata. Data Anda sekarang akan diganti."));
+    openModal("Pulihkan cadangan", body, function () {
+      state = d; showNote = false;
+      if (typeof obj.photo === "string" && obj.photo.indexOf("data:image/") === 0) { try { localStorage.setItem(LS_PHOTO, obj.photo); } catch (e) {} }
+      touch(); bkSay("Cadangan dipulihkan.");
+      return "";
+    }, { okLabel: "Pulihkan" });
+  }
+  function backupText() {
+    return JSON.stringify({ app: "peluncur-situs", v: 1, exportedAt: new Date().toISOString(), data: clone(state) }, null, 2);
+  }
+  function openTextModal(text) {
+    var body = el("div");
+    body.appendChild(el("p", "hint", "Pilih semua teks di bawah, lalu salin."));
+    var ta = el("textarea", "bkta"); ta.readOnly = true; ta.value = text; ta.setAttribute("aria-label", "Teks cadangan");
+    body.appendChild(ta);
+    openModal("Salin cadangan", body, function () { return ""; }, { okLabel: "Selesai", noCancel: true });
+    ta.focus(); ta.select();
+  }
+  async function doCopy() {
+    var text = backupText();
+    try { await navigator.clipboard.writeText(text); bkSay("Teks cadangan disalin. Tempel ke Google Docs, Keep, atau catatan Anda."); }
+    catch (e) { openTextModal(text); }
+  }
+  function openPasteModal() {
+    var body = el("div");
+    var ta = el("textarea", "bkta"); ta.placeholder = "Tempel teks cadangan di sini"; ta.setAttribute("aria-label", "Tempel teks cadangan");
+    body.appendChild(ta);
+    var parsed = null;
+    openModal("Pulihkan dari teks", body, function () {
+      try {
+        parsed = JSON.parse(ta.value.trim());
+        if (!parsed || parsed.app !== "peluncur-situs" || !parsed.data) throw new Error("format");
+      } catch (e) { return "Teks ini bukan cadangan Peluncur Situs."; }
+      setTimeout(function () { openRestore(parsed); }, 0);
+      return "";
+    }, { okLabel: "Lanjut" });
+    ta.focus();
+  }
+  function onRestoreFile() {
+    var inp = document.getElementById("bkFile");
+    var f = inp.files && inp.files[0]; if (!f) return;
+    var fr = new FileReader();
+    fr.onerror = function () { bkSay("File tidak bisa dibaca."); inp.value = ""; };
+    fr.onload = function () {
+      try {
+        var o = JSON.parse(String(fr.result));
+        if (!o || o.app !== "peluncur-situs" || !o.data) throw new Error("format");
+        openRestore(o);
+      } catch (e) { bkSay("File ini bukan cadangan Peluncur Situs."); }
+      inp.value = "";
+    };
+    fr.readAsText(f);
+  }
+
+  /* ---------- jam dan sapaan ---------- */
+  var df = new Intl.DateTimeFormat("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+  var lastHM = "", lastDay = "";
+  function greetWord(h) { return h < 4 ? "Selamat malam" : h < 11 ? "Selamat pagi" : h < 15 ? "Selamat siang" : h < 18 ? "Selamat sore" : "Selamat malam"; }
+  function renderGreeting() {
+    var g = greetWord(new Date().getHours());
+    setText("greet", state.name ? g + ", " + state.name + "." : g + ".");
+  }
+  function tick() {
+    var now = new Date(), hm = pad2(now.getHours()) + ":" + pad2(now.getMinutes());
+    if (hm === lastHM) return;
+    lastHM = hm;
+    setText("clkHM", hm);
+    setText("topDate", df.format(now));
+    renderGreeting();
+  }
+
+  /* ---------- fokus hari ini ---------- */
+  function renderPins() {
+    var box = document.getElementById("pins");
+    box.textContent = "";
+    var list = [];
+    state.groups.forEach(function (g) { g.sites.forEach(function (s) { if (s.pin) list.push(s); }); });
+    if (!list.length) {
+      var hint = el("button", "lnk", "Pin situs favorit dari panel Situs agar muncul di sini");
+      hint.type = "button";
+      hint.addEventListener("click", function () { setDrawer(true); });
+      box.appendChild(hint);
+      return;
+    }
+    list.forEach(function (s) {
+      var a = el("a", "pinchip"); a.href = s.url; a.target = "_blank"; a.rel = "noopener noreferrer";
+      var tile = el("span", "tile", (s.title.trim().charAt(0) || "?").toUpperCase());
+      tile.style.setProperty("--h", String(hue(host(s.url)))); tile.setAttribute("aria-hidden", "true");
+      a.appendChild(tile); a.appendChild(el("span", "pt", s.title));
+      box.appendChild(a);
+    });
+  }
+
+  /* ---------- tugas ---------- */
+  /* ---------- tugas tim (Supabase, opsional lewat config.js) ---------- */
+  var LS_TEAM = "peluncur-tim-v1";
+  var CFG = window.PELUNCUR_CONFIG || {};
+  var TEAM_URL = String(CFG.supabaseUrl || "").replace(/\/+$/, "");
+  var TEAM_KEY = String(CFG.supabaseKey || "");
+  var teamAvail = /^https?:\/\/[^\s]+$/.test(TEAM_URL) && TEAM_KEY.length > 20;
+  var teamCode = "", teamTodos = [], teamLoaded = false, teamErr = false, teamWriteErr = false, teamSig = "", pollTimer = null;
+  function teamOn() { return teamAvail && !!teamCode; }
+  function cleanCode(s) { return String(s || "").toLowerCase().replace(/[^a-z0-9_-]/g, "").slice(0, 40); }
+  function teamHeaders(prefer) {
+    var h = { "apikey": TEAM_KEY, "Content-Type": "application/json" };
+    if (TEAM_KEY.indexOf("eyJ") === 0) h["Authorization"] = "Bearer " + TEAM_KEY;
+    if (prefer) h["Prefer"] = prefer;
+    return h;
+  }
+  async function teamReq(method, query, body, prefer) {
+    var res = await fetch(TEAM_URL + "/rest/v1/tasks" + query, { method: method, headers: teamHeaders(prefer), body: body ? JSON.stringify(body) : undefined });
+    if (!res.ok) throw new Error("http " + res.status);
+    var txt = await res.text();
+    return txt ? JSON.parse(txt) : null;
+  }
+  async function teamFetch() {
+    if (!teamOn()) return;
+    var code = teamCode;
+    try {
+      var rows = await teamReq("GET", "?team=eq." + encodeURIComponent(code) + "&select=id,title,done,author,created_at&order=created_at.asc&limit=200");
+      if (code !== teamCode) return;
+      var list = (Array.isArray(rows) ? rows : []).map(function (r) {
+        return { id: String(r.id), text: String(r.title || ""), done: !!r.done, by: r.author ? String(r.author) : "" };
+      });
+      var sig = JSON.stringify(list) + "|ok";
+      var changed = sig !== teamSig || teamErr || !teamLoaded;
+      teamSig = sig; teamTodos = list; teamErr = false; teamLoaded = true;
+      if (changed) renderTodos();
+    } catch (e) {
+      if (!teamErr) { teamErr = true; renderTodos(); }
+    }
+  }
+  function teamStartPolling() {
+    clearInterval(pollTimer); pollTimer = null;
+    if (!teamOn()) return;
+    pollTimer = setInterval(function () { if (!document.hidden) teamFetch(); }, 5000);
+  }
+  async function teamWrite(fn) {
+    try { await fn(); teamWriteErr = false; } catch (e) { teamWriteErr = true; }
+    await teamFetch(); renderTodos();
+  }
+  function teamAdd(text) {
+    teamTodos.push({ id: "tmp-" + rid(), text: text, done: false, by: state.name || "" }); renderTodos();
+    teamWrite(function () { return teamReq("POST", "", { team: teamCode, title: text, author: state.name || null }); });
+  }
+  function teamToggle(t) {
+    var nv = !t.done; t.done = nv; renderTodos();
+    if (String(t.id).indexOf("tmp-") === 0) return;
+    teamWrite(function () { return teamReq("PATCH", "?id=eq." + encodeURIComponent(t.id), { done: nv }); });
+  }
+  function teamDelete(t) {
+    teamTodos = teamTodos.filter(function (x) { return x.id !== t.id; }); renderTodos();
+    if (String(t.id).indexOf("tmp-") === 0) return;
+    teamWrite(function () { return teamReq("DELETE", "?id=eq." + encodeURIComponent(t.id)); });
+  }
+  function teamClearDone() {
+    teamTodos = teamTodos.filter(function (x) { return !x.done; }); renderTodos();
+    teamWrite(function () { return teamReq("DELETE", "?team=eq." + encodeURIComponent(teamCode) + "&done=eq.true"); });
+  }
+  function setTeamCode(c) {
+    teamCode = c; teamTodos = []; teamLoaded = false; teamErr = false; teamWriteErr = false; teamSig = "";
+    try { localStorage.setItem(LS_TEAM, c); } catch (e) {}
+    try { history.replaceState(null, "", c ? "#tim=" + encodeURIComponent(c) : location.pathname + location.search); } catch (e) {}
+    renderTodos(); teamStartPolling(); teamFetch();
+  }
+  function shareLink(c) { return location.origin + location.pathname + "#tim=" + encodeURIComponent(c); }
+  function openTeamModal() {
+    var body = el("div");
+    var inp = input("text", teamCode, "contoh: kantor-2026"); inp.maxLength = 40;
+    body.appendChild(field("teamcode", "Kode tim", inp));
+    body.appendChild(el("p", "hint", "Rekan yang memakai kode yang sama melihat tugas yang sama. Hanya huruf kecil, angka, dan tanda minus. Kosongkan untuk tugas pribadi."));
+    if (teamCode) {
+      var lk = input("text", shareLink(teamCode)); lk.readOnly = true; lk.setAttribute("aria-label", "Tautan untuk rekan");
+      lk.addEventListener("focus", function () { lk.select(); });
+      body.appendChild(field("teamlink", "Tautan untuk rekan", lk));
+    }
+    openModal("Tugas tim", body, function () { setTeamCode(cleanCode(inp.value)); return ""; }, { okLabel: "Simpan" });
+  }
+  function initTeam() {
+    document.getElementById("teamBtn").hidden = !teamAvail;
+    if (!teamAvail) return;
+    var c = "";
+    try { var m = (location.hash || "").match(/[#&]tim=([^&]+)/); if (m) c = cleanCode(decodeURIComponent(m[1])); } catch (e) {}
+    if (c) { try { localStorage.setItem(LS_TEAM, c); } catch (e) {} }
+    else { try { c = cleanCode(localStorage.getItem(LS_TEAM) || ""); } catch (e) {} }
+    teamCode = c;
+    document.addEventListener("visibilitychange", function () { if (!document.hidden) teamFetch(); });
+    renderTodos(); teamStartPolling(); teamFetch();
+  }
+
+  function renderTodos() {
+    var ul = document.getElementById("todoList");
+    ul.textContent = "";
+    var team = teamOn();
+    var list = team ? teamTodos : state.todos;
+    var open = list.filter(function (t) { return !t.done; }).length;
+    setText("todoBtn", open ? "Tugas · " + open : "Tugas");
+    setText("todoCount", list.length ? (list.length - open) + "/" + list.length : "");
+    setText("todoTitle", team ? "Tugas tim" : "Tugas");
+    setText("todoStat", !teamAvail ? "" : !team ? "Tugas pribadi. Tekan Tim untuk berbagi dengan rekan." :
+      teamErr ? "Belum tersambung ke server. Mencoba lagi…" : teamWriteErr ? "Perubahan terakhir gagal disimpan." : "Tim: " + teamCode);
+    if (!list.length) ul.appendChild(el("li", "empty-li", team && !teamLoaded && !teamErr ? "Memuat…" : "Belum ada tugas."));
+    list.forEach(function (t) {
+      var li = el("li");
+      var c = el("button", "chk"); c.type = "button"; c.setAttribute("role", "checkbox");
+      c.setAttribute("aria-checked", String(t.done)); c.setAttribute("aria-label", "Tandai selesai: " + t.text);
+      c.addEventListener("click", function () { if (team) teamToggle(t); else { t.done = !t.done; touch(); } });
+      li.appendChild(c);
+      var tx = el("span", "t" + (t.done ? " done" : ""), t.text);
+      if (team && t.by) tx.appendChild(el("small", "tby", " · " + t.by));
+      li.appendChild(tx);
+      li.appendChild(btn("xbtn", "×", "Hapus tugas: " + t.text, function () {
+        if (team) teamDelete(t); else { state.todos = state.todos.filter(function (x) { return x.id !== t.id; }); touch(); }
+      }));
+      ul.appendChild(li);
+    });
+    document.getElementById("todoClear").hidden = !list.some(function (t) { return t.done; });
+  }
+  function setTodoOpen(open, focus, silent) {
+    var pop = document.getElementById("todoPop");
+    pop.hidden = !open;
+    document.getElementById("todoBtn").setAttribute("aria-expanded", String(open));
+    if (!silent) { try { localStorage.setItem(LS_STICKY, open ? "0" : "1"); } catch (e) {} }
+    if (open && focus) document.getElementById("todoAdd").focus();
+  }
+
+  /* ---------- kata-kata ---------- */
+  var BUILTIN = [
+    ["Sedikit demi sedikit, lama-lama menjadi bukit.", "Peribahasa"],
+    ["Berakit-rakit ke hulu, berenang-renang ke tepian.", "Peribahasa"],
+    ["Bersatu kita teguh, bercerai kita runtuh.", "Peribahasa"],
+    ["Air beriak tanda tak dalam.", "Peribahasa"],
+    ["Tak ada gading yang tak retak.", "Peribahasa"],
+    ["Rajin pangkal pandai, hemat pangkal kaya.", "Peribahasa"],
+    ["Di mana bumi dipijak, di situ langit dijunjung.", "Peribahasa"],
+    ["Ringan sama dijinjing, berat sama dipikul.", "Peribahasa"],
+    ["Sekali merengkuh dayung, dua tiga pulau terlampaui.", "Peribahasa"],
+    ["Alah bisa karena biasa.", "Peribahasa"],
+    ["Mulai dari yang ada, kerjakan sekarang.", "Pengingat"],
+    ["Satu tab cukup. Selesaikan, lalu pindah.", "Pengingat"],
+    ["Fokus pada satu hal, selesaikan dengan baik.", "Pengingat"],
+    ["Istirahat juga bagian dari kerja.", "Pengingat"],
+    ["Kemajuan kecil setiap hari mengalahkan rencana besar yang tak dimulai.", "Pengingat"],
+    ["Jangan menunggu siap. Mulai, lalu perbaiki.", "Pengingat"],
+    ["Minum air putih dulu, baru lanjut.", "Pengingat"],
+    ["Hari ini cukup kerjakan yang terpenting.", "Pengingat"]
+  ];
+  var qi = -1;
+  function pool() {
+    var p = BUILTIN.map(function (b) { return { text: b[0], src: b[1] }; });
+    state.quotes.forEach(function (q) { p.push({ text: q.text, src: "Milik Anda" }); });
+    return p;
+  }
+  function renderQuote() {
+    var p = pool();
+    if (qi < 0 || qi >= p.length) { var d = new Date(); qi = (d.getFullYear() * 372 + d.getMonth() * 31 + d.getDate()) % p.length; }
+    setText("qText", "“" + p[qi].text + "”");
+    setText("qSrc", p[qi].src);
+  }
+  function nextQuote() {
+    var n = pool().length; if (n < 2) return;
+    var j; do { j = Math.floor(Math.random() * n); } while (j === qi);
+    qi = j; renderQuote();
+  }
+  function openQuotesModal() {
+    var body = el("div");
+    var inp = input("text", "", "Tulis kata-kata Anda"); inp.maxLength = 200;
+    var list = el("ul", "qlist");
+    function fill() {
+      list.textContent = "";
+      if (!state.quotes.length) { list.appendChild(el("li", "qempty", "Belum ada kata-kata buatan Anda.")); return; }
+      state.quotes.forEach(function (q) {
+        var li = el("li"); li.appendChild(el("span", null, q.text));
+        li.appendChild(confirmBtn("Hapus kata-kata", function () { state.quotes = state.quotes.filter(function (x) { return x.id !== q.id; }); touch(); fill(); }));
+        list.appendChild(li);
+      });
+    }
+    fill();
+    body.appendChild(field("qnew", "Kata-kata baru", inp));
+    body.appendChild(el("div", "flabel2", "Kata-kata Anda"));
+    body.appendChild(list);
+    openModal("Kata-kata", body, function () {
+      var v = inp.value.trim(); if (!v) return "";
+      state.quotes.push({ id: rid(), text: v.slice(0, 200) });
+      touch(); qi = pool().length - 1; renderQuote(); return "";
+    }, { okLabel: "Tambah" });
+  }
+
+  function renderAll() { applyBg(); renderGreeting(); renderPins(); renderTodos(); renderQuote(); render(); }
+
+  /* ---------- panel situs ---------- */
+  var drawer = document.getElementById("drawer"), dim = document.getElementById("dim");
+  var qEl = document.getElementById("q");
+  function setDrawer(open) {
+    drawer.classList.toggle("open", open); dim.classList.toggle("open", open);
+    document.body.classList.toggle("drawer-open", open);
+    document.getElementById("openSites").setAttribute("aria-expanded", String(open));
+    if (open) { setTimeout(function () { qEl.focus(); }, 30); }
+    else document.getElementById("openSites").focus();
+  }
+
+  /* ---------- wiring ---------- */
+  qEl.addEventListener("input", render);
+  qEl.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") { var a = document.querySelector("#main a.site"); if (a && !editing) a.click(); }
+    if (e.key === "Escape") { if (qEl.value) { qEl.value = ""; render(); e.stopPropagation(); } }
+  });
+  document.addEventListener("keydown", function (e) {
+    if (document.getElementById("modalRoot").firstChild) return;
+    var t = e.target, tag = t && t.tagName;
+    if (e.key === "Escape") {
+      if (drawer.classList.contains("open")) setDrawer(false);
+      return;
+    }
+    if (e.key === "/" && tag !== "INPUT" && tag !== "SELECT" && tag !== "TEXTAREA") { e.preventDefault(); if (!drawer.classList.contains("open")) setDrawer(true); else qEl.focus(); }
+  });
+  document.getElementById("openSites").addEventListener("click", function () { setDrawer(true); });
+  document.getElementById("closeSites").addEventListener("click", function () { setDrawer(false); });
+  dim.addEventListener("click", function () { setDrawer(false); });
+  document.getElementById("addSite").addEventListener("click", function () { openSiteModal(null, null); });
+  document.getElementById("addGroup").addEventListener("click", function () { openGroupModal(null); });
+  document.getElementById("editToggle").addEventListener("click", function () {
+    editing = !editing;
+    var b = document.getElementById("editToggle");
+    b.setAttribute("aria-pressed", String(editing)); b.textContent = editing ? "Selesai" : "Ubah";
+    render();
+  });
+  document.getElementById("themeBtn").addEventListener("click", openThemeModal);
+  document.getElementById("bkSave").addEventListener("click", doBackup);
+  document.getElementById("bkLoad").addEventListener("click", function () { document.getElementById("bkFile").click(); });
+  document.getElementById("bkFile").addEventListener("change", onRestoreFile);
+  document.getElementById("bkCopy").addEventListener("click", doCopy);
+  document.getElementById("bkPaste").addEventListener("click", openPasteModal);
+  document.getElementById("qNext").addEventListener("click", nextQuote);
+  document.getElementById("qEdit").addEventListener("click", openQuotesModal);
+  document.getElementById("todoBtn").addEventListener("click", function () { setTodoOpen(document.getElementById("todoPop").hidden, true); });
+  document.getElementById("todoAdd").addEventListener("keydown", function (e) {
+    if (e.key !== "Enter") return;
+    var v = this.value.trim(); if (!v) return;
+    if (teamOn()) { teamAdd(v.slice(0, 200)); this.value = ""; return; }
+    if (state.todos.length >= 100) return;
+    state.todos.push({ id: rid(), text: v.slice(0, 200), done: false });
+    this.value = ""; touch();
+  });
+  document.getElementById("todoClear").addEventListener("click", function () {
+    if (teamOn()) { teamClearDone(); return; }
+    state.todos = state.todos.filter(function (t) { return !t.done; }); touch();
+  });
+  document.getElementById("teamBtn").addEventListener("click", openTeamModal);
+
+  /* ---------- boot ---------- */
+  var saved = lsGet();
+  if (saved && (saved.groups.length || saved.todos.length || saved.name)) { state = saved; fromLocal = true; }
+  else { state = starter(); showNote = true; }
+  setStatus("local");
+  renderAll();
+  tick();
+  setInterval(tick, 1000);
+  initTeam();
+  try {
+    var stickyPref = localStorage.getItem(LS_STICKY);
+    if (stickyPref === "1" || (stickyPref === null && window.innerWidth < 720)) setTodoOpen(false, false, true);
+  } catch (e) { if (window.innerWidth < 720) setTodoOpen(false, false, true); }
+
+  (async function connect() {
+    try {
+      var c = window.claude;
+      if (!c || !c.use) return;
+      var u = function (n) { return Promise.resolve(c.use(n)).catch(function () { return null; }); };
+      var res = await Promise.all([u("db"), u("user"), u("assets"), u("downloads")]);
+      var db = res[0], user = res[1];
+      assetsNs = res[2] || null;
+      dlNs = res[3] || null;
+      var id = user ? await user.id() : null;
+      if (!db || !id) return;
+      dbDoc = db.collection("data/users/" + id).doc("peluncur");
+      dbDoc.onSnapshot(function (snap) {
+        if (snap.metadata.hasPendingWrites || dirty || saving) return;
+        if (snap.exists) {
+          var inc = norm(snap.data());
+          if (JSON.stringify(inc) !== JSON.stringify(norm(state))) { state = inc; showNote = false; lsSet(); renderAll(); }
+          fromLocal = false;
+          setStatus("cloud");
+        } else if (fromLocal) {
+          flush();
+        } else {
+          setStatus("cloud");
+        }
+      }, function () { dbDoc = null; setStatus("local"); });
+    } catch (e) { dbDoc = null; setStatus("local"); }
+  })();
+})();
+</script>
+
+</body>
+</html>
