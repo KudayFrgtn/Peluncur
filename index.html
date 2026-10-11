@@ -337,6 +337,10 @@ h1 { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; lett
 .trange { margin-left: 4px; font-weight: 600; font-size: 0.9rem; color: var(--muted); }
 .chip { height: 32px; padding: 0 14px; border: 0; border-radius: 999px; background: color-mix(in srgb, var(--bg) 55%, transparent); box-shadow: inset 0 0 0 1px var(--edge); color: var(--fg); font-size: 0.85rem; font-weight: 500; }
 .chip[aria-pressed="true"] { background: var(--accent); color: var(--accent-fg); box-shadow: none; font-weight: 600; }
+.tteam { display: block; width: 100%; height: 30px; margin-bottom: 6px; padding: 0 10px; border: 0; border-radius: 999px; background: rgba(255,255,255,0.45); box-shadow: inset 0 0 0 1px rgba(58,46,5,0.3); color: var(--note-ink); font-size: 0.8rem; font-weight: 600; }
+.tteam[hidden] { display: none; }
+.tpick { display: flex; align-items: center; gap: 8px; }
+.bteam { height: 30px; padding: 0 10px; border: 0; border-radius: 999px; background: color-mix(in srgb, var(--bg) 55%, transparent); box-shadow: inset 0 0 0 1px var(--edge); color: var(--fg); font-size: 0.82rem; font-weight: 600; }
 .thint { margin: -2px 0 10px; font-size: 0.8rem; color: var(--muted); }
 .tnote { margin: 0 0 10px; padding: 8px 12px; border-radius: 12px; font-size: 0.82rem; background: color-mix(in srgb, var(--danger) 14%, transparent); }
 .bscroll { flex: 1; min-height: 0; display: flex; align-items: flex-start; gap: 20px; overflow: auto; padding: 18px 10px 26px; scroll-snap-type: x proximity; }
@@ -418,6 +422,7 @@ h1 { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; lett
   <section class="todo" id="todoPop" aria-label="Daftar tugas">
     <div class="thead"><h2 id="todoTitle">Tugas</h2><span class="thhr"><span class="tcount" id="todoCount"></span><button class="mini" id="teamBtn" type="button" hidden>Tim</button></span></div>
     <ul class="tlist" id="todoList"></ul>
+    <select class="tteam" id="todoTeam" hidden aria-label="Tambah tugas untuk tim"></select>
     <input class="tadd" id="todoAdd" type="text" placeholder="Tugas baru, lalu Enter" maxlength="200" autocomplete="off" aria-label="Tambah tugas">
     <button class="tablebtn" id="tableBtn" type="button">Papan per hari</button>
     <button class="tclear" id="todoClear" type="button" hidden>Hapus yang selesai</button>
@@ -1037,7 +1042,7 @@ h1 { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; lett
   var SECRET_MSG = "Kunci itu rahasia (secret atau service_role) dan tidak boleh dipasang di halaman publik. Pakai kunci publishable atau anon, lalu buat ulang kunci rahasia Anda di Supabase.";
   var cfgMsg = cfgProblem();
   var teamAvail = CFG_PRESENT && !cfgMsg;
-  var teamCode = "", teamTodos = [], teamLoaded = false, teamErr = false, teamWhy = "", teamWriteErr = false, teamWriteWhy = "", teamSig = "", pollTimer = null, teamInfo = null, boardTeam = "";
+  var teamCode = "", teamTodos = [], teamLoaded = false, teamErr = false, teamWhy = "", teamWriteErr = false, teamWriteWhy = "", teamSig = "", pollTimer = null, teamInfo = null, boardTeam = "", addTo = "";
   function cfgProblem() {
     if (!CFG_PRESENT) return "";
     if (!TEAM_URL && !TEAM_KEY) return "Mode tim belum aktif: isi supabaseUrl dan supabaseKey di config.js.";
@@ -1120,8 +1125,23 @@ h1 { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; lett
     await teamFetch(); renderTodos();
   }
   function isMaster() { return !!(teamOn() && teamInfo && teamInfo.master); }
-  function addTeam() { return isMaster() ? boardTeam : ""; }
-  function needTeam() { return isMaster() && !boardTeam; }
+  function addTeam() { return isMaster() ? addTo : ""; }
+  function needTeam() { return isMaster() && !addTo; }
+  function teamNames() {
+    var names = teamInfo ? teamInfo.tims.slice() : [];
+    teamTodos.forEach(function (t) { if (t.team && names.indexOf(t.team) < 0) names.push(t.team); });
+    return names;
+  }
+  function fillTeamSelect(sel) {
+    var names = teamNames(), sig = names.join("|");
+    if (sel.getAttribute("data-sig") !== sig) {
+      sel.textContent = "";
+      names.forEach(function (n) { var o = el("option", null, n); o.value = n; sel.appendChild(o); });
+      sel.setAttribute("data-sig", sig);
+    }
+    sel.value = addTo;
+  }
+  function pickAddTo(v) { addTo = v; renderTodos(); }
   function isTmp(t) { return String(t.id).indexOf("tmp-") === 0; }
   function teamAdd(text, day) {
     var tim = addTeam();
@@ -1151,7 +1171,7 @@ h1 { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; lett
     if (ids.length) teamWrite(function () { return teamReq("tugas_hapus", { p_kode: teamCode, p_ids: ids }); });
   }
   function setTeamCode(c) {
-    teamCode = c; teamInfo = null; boardTeam = ""; teamTodos = []; teamLoaded = false; teamErr = false; teamWriteErr = false; teamSig = "";
+    teamCode = c; teamInfo = null; boardTeam = ""; addTo = ""; teamTodos = []; teamLoaded = false; teamErr = false; teamWriteErr = false; teamSig = "";
     try { localStorage.setItem(LS_TEAM, c); } catch (e) {}
     renderTodos(); teamStartPolling(); teamFetch();
   }
@@ -1243,6 +1263,13 @@ h1 { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; lett
     var who = !teamInfo ? "Menghubungkan…" : master ? "Master · " + (boardTeam ? boardTeam : "semua tim") : "Tim: " + teamInfo.tim;
     setText("todoStat", !teamAvail ? cfgMsg : !team ? "Tugas pribadi. Tekan Tim untuk berbagi dengan rekan." :
       teamErr ? teamWhy : teamWriteErr ? teamWriteWhy : who);
+    if (master && teamInfo) {
+      var nm = teamNames();
+      if (!addTo || nm.indexOf(addTo) < 0) addTo = nm.filter(function (n) { return n !== teamInfo.tim; })[0] || teamInfo.tim;
+    }
+    var tsel = document.getElementById("todoTeam");
+    tsel.hidden = !master;
+    if (master) fillTeamSelect(tsel);
     var ta = document.getElementById("todoAdd");
     ta.disabled = needTeam(); ta.placeholder = needTeam() ? "Buka Papan, pilih tim, lalu tambah" : "Tugas baru, lalu Enter";
     var later = list.length - vis.length;
@@ -1320,11 +1347,14 @@ h1 { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; lett
       var names = teamInfo.tims.slice();
       teamTodos.forEach(function (t) { if (t.team && names.indexOf(t.team) < 0) names.push(t.team); });
       [""].concat(names).forEach(function (n) {
-        var ch = btn("chip", n || "Semua tim", null, function () { boardTeam = n; renderTodos(); });
+        var ch = btn("chip", n || "Semua tim", null, function () { boardTeam = n; if (n) addTo = n; renderTodos(); });
         ch.setAttribute("aria-pressed", String(boardTeam === n)); chips.appendChild(ch);
       });
       m.appendChild(chips);
-      m.appendChild(el("p", "thint", boardTeam ? "Tugas baru masuk ke tim: " + boardTeam : "Pilih salah satu tim di atas (misalnya tim-a) untuk menambah tugas."));
+      var ar = el("label", "thint tpick", "Tambah tugas untuk tim: ");
+      var bs = el("select", "bteam"); bs.id = "boardTeamSel"; fillTeamSelect(bs);
+      bs.addEventListener("change", function () { pickAddTo(bs.value); });
+      ar.appendChild(bs); m.appendChild(ar);
     }
     if (team && teamErr) m.appendChild(el("p", "tnote", teamWhy));
     else if (team && teamWriteErr) m.appendChild(el("p", "tnote", teamWriteWhy));
@@ -1536,6 +1566,7 @@ h1 { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; lett
     state.todos = state.todos.filter(function (t) { return !t.done; }); touch();
   });
   document.getElementById("teamBtn").addEventListener("click", openTeamModal);
+  document.getElementById("todoTeam").addEventListener("change", function () { pickAddTo(this.value); });
 
   /* ---------- boot ---------- */
   var saved = lsGet();
