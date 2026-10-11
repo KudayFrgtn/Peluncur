@@ -976,11 +976,40 @@ h1 { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; lett
   /* ---------- tugas ---------- */
   /* ---------- tugas tim (Supabase, opsional lewat config.js) ---------- */
   var LS_TEAM = "peluncur-tim-v1";
-  var CFG = window.PELUNCUR_CONFIG || {};
-  var TEAM_URL = String(CFG.supabaseUrl || "").replace(/\/+$/, "");
-  var TEAM_KEY = String(CFG.supabaseKey || "");
-  var teamAvail = /^https?:\/\/[^\s]+$/.test(TEAM_URL) && TEAM_KEY.length > 20;
-  var teamCode = "", teamTodos = [], teamLoaded = false, teamErr = false, teamWriteErr = false, teamSig = "", pollTimer = null;
+  var CFG_PRESENT = typeof window.PELUNCUR_CONFIG === "object" && window.PELUNCUR_CONFIG !== null;
+  var CFG = CFG_PRESENT ? window.PELUNCUR_CONFIG : {};
+  var TEAM_URL = String(CFG.supabaseUrl || "").trim();
+  var TEAM_KEY = String(CFG.supabaseKey || "").trim();
+  var SECRET_MSG = "Kunci itu rahasia (secret atau service_role) dan tidak boleh dipasang di halaman publik. Pakai kunci publishable atau anon, lalu buat ulang kunci rahasia Anda di Supabase.";
+  var cfgMsg = cfgProblem();
+  var teamAvail = CFG_PRESENT && !cfgMsg;
+  var teamCode = "", teamTodos = [], teamLoaded = false, teamErr = false, teamWhy = "", teamWriteErr = false, teamWriteWhy = "", teamSig = "", pollTimer = null;
+  function cfgProblem() {
+    if (!CFG_PRESENT) return "";
+    if (!TEAM_URL && !TEAM_KEY) return "Mode tim belum aktif: isi supabaseUrl dan supabaseKey di config.js.";
+    var u;
+    try { u = new URL(TEAM_URL); } catch (e) { return "supabaseUrl tidak valid. Contoh: https://abcdxyz.supabase.co"; }
+    if (u.protocol !== "https:" && u.protocol !== "http:") return "supabaseUrl tidak valid. Contoh: https://abcdxyz.supabase.co";
+    if (/(^|\.)supabase\.com$/i.test(u.hostname)) return "supabaseUrl salah: itu alamat dashboard. Pakai Project URL yang berakhiran .supabase.co.";
+    TEAM_URL = u.origin;
+    if (TEAM_KEY.length <= 20) return "supabaseKey kosong atau terlalu pendek.";
+    if (/^sb_secret_/.test(TEAM_KEY)) return SECRET_MSG;
+    if (TEAM_KEY.indexOf("eyJ") === 0) {
+      try {
+        var pl = JSON.parse(atob(TEAM_KEY.split(".")[1].replace(/-/g, "+").replace(/_/g, "/")));
+        if (pl && pl.role === "service_role") return SECRET_MSG;
+      } catch (e) {}
+    }
+    return "";
+  }
+  function explainErr(e) {
+    var s = e && e.status;
+    if (!s) return "Tidak bisa menghubungi Supabase. Periksa supabaseUrl di config.js dan koneksi internet.";
+    if (s === 404) return "Tabel tasks tidak ditemukan (404). Jalankan supabase-setup.sql di SQL Editor, atau periksa supabaseUrl.";
+    if (s === 401 || s === 403) return "Ditolak (" + s + "). Periksa kunci di config.js (pakai publishable atau anon) dan pastikan supabase-setup.sql sudah dijalankan sampai selesai.";
+    if (s >= 500) return "Server Supabase bermasalah (" + s + "). Proyek gratis bisa terjeda; buka dashboard Supabase dan aktifkan lagi.";
+    return "Gagal (" + s + ")" + (e.detail ? ": " + e.detail : "") + ".";
+  }
   function teamOn() { return teamAvail && !!teamCode; }
   function cleanCode(s) { return String(s || "").toLowerCase().replace(/[^a-z0-9_-]/g, "").slice(0, 40); }
   function teamHeaders(prefer) {
@@ -991,7 +1020,12 @@ h1 { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; lett
   }
   async function teamReq(method, query, body, prefer) {
     var res = await fetch(TEAM_URL + "/rest/v1/tasks" + query, { method: method, headers: teamHeaders(prefer), body: body ? JSON.stringify(body) : undefined });
-    if (!res.ok) throw new Error("http " + res.status);
+    if (!res.ok) {
+      var detail = "";
+      try { var j = await res.json(); detail = String(j.message || j.hint || ""); } catch (x) {}
+      var err = new Error("http " + res.status); err.status = res.status; err.detail = detail.slice(0, 120);
+      throw err;
+    }
     var txt = await res.text();
     return txt ? JSON.parse(txt) : null;
   }
@@ -1009,7 +1043,8 @@ h1 { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; lett
       teamSig = sig; teamTodos = list; teamErr = false; teamLoaded = true;
       if (changed) renderTodos();
     } catch (e) {
-      if (!teamErr) { teamErr = true; renderTodos(); }
+      var why = explainErr(e);
+      if (!teamErr || why !== teamWhy) { teamErr = true; teamWhy = why; renderTodos(); }
     }
   }
   function teamStartPolling() {
@@ -1018,7 +1053,7 @@ h1 { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; lett
     pollTimer = setInterval(function () { if (!document.hidden) teamFetch(); }, 5000);
   }
   async function teamWrite(fn) {
-    try { await fn(); teamWriteErr = false; } catch (e) { teamWriteErr = true; }
+    try { await fn(); teamWriteErr = false; } catch (e) { teamWriteErr = true; teamWriteWhy = explainErr(e); }
     await teamFetch(); renderTodos();
   }
   function teamAdd(text) {
@@ -1051,6 +1086,18 @@ h1 { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; lett
     var inp = input("text", teamCode, "contoh: kantor-2026"); inp.maxLength = 40;
     body.appendChild(field("teamcode", "Kode tim", inp));
     body.appendChild(el("p", "hint", "Rekan yang memakai kode yang sama melihat tugas yang sama. Hanya huruf kecil, angka, dan tanda minus. Kosongkan untuk tugas pribadi."));
+    var testOut = el("p", "hint", ""); testOut.id = "teamTestOut"; testOut.setAttribute("role", "status");
+    var testBtn = btn("btn", "Tes sambungan", null, async function () {
+      testOut.textContent = "Menguji…";
+      try {
+        await teamReq("GET", "?select=id&limit=1");
+        await teamReq("POST", "", { team: "_uji", title: "uji sambungan", author: null });
+        await teamReq("DELETE", "?team=eq._uji");
+        testOut.textContent = "Tersambung. Tabel tasks bisa dibaca, ditulis, dan dihapus.";
+      } catch (e) { testOut.textContent = explainErr(e); }
+    });
+    body.appendChild(testBtn);
+    body.appendChild(testOut);
     if (teamCode) {
       var lk = input("text", shareLink(teamCode)); lk.readOnly = true; lk.setAttribute("aria-label", "Tautan untuk rekan");
       lk.addEventListener("focus", function () { lk.select(); });
@@ -1079,8 +1126,8 @@ h1 { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; lett
     setText("todoBtn", open ? "Tugas · " + open : "Tugas");
     setText("todoCount", list.length ? (list.length - open) + "/" + list.length : "");
     setText("todoTitle", team ? "Tugas tim" : "Tugas");
-    setText("todoStat", !teamAvail ? "" : !team ? "Tugas pribadi. Tekan Tim untuk berbagi dengan rekan." :
-      teamErr ? "Belum tersambung ke server. Mencoba lagi…" : teamWriteErr ? "Perubahan terakhir gagal disimpan." : "Tim: " + teamCode);
+    setText("todoStat", !teamAvail ? cfgMsg : !team ? "Tugas pribadi. Tekan Tim untuk berbagi dengan rekan." :
+      teamErr ? teamWhy : teamWriteErr ? teamWriteWhy : "Tim: " + teamCode);
     if (!list.length) ul.appendChild(el("li", "empty-li", team && !teamLoaded && !teamErr ? "Memuat…" : "Belum ada tugas."));
     list.forEach(function (t) {
       var li = el("li");
