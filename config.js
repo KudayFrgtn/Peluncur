@@ -4,6 +4,6 @@
 // JANGAN pernah memakai kunci "secret" atau "service_role" di sini.
 // Kosongkan keduanya kalau tugas hanya untuk Anda sendiri.
 window.PELUNCUR_CONFIG = {
-  supabaseUrl: "https://gxdwahmgrmjftnpvydza.supabase.co/rest/v1/",
+  supabaseUrl: "https://gxdwahmgrmjftnpvydza.supabase.co",
   supabaseKey: "sb_publishable_4Bqi3p0p0XuitD80h1zuXg_fs4d77Fd"
 };
