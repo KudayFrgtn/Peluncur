@@ -346,6 +346,14 @@ h1 { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; lett
 @media (prefers-reduced-motion: no-preference) { .toast { animation: toastin 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); } }
 @keyframes toastin { from { opacity: 0; transform: translateY(12px) scale(0.97); } to { opacity: 1; transform: none; } }
 @media (max-width: 720px) { #toasts { bottom: 84px; } }
+.kli { list-style: none; display: block; padding: 0 4px 8px 34px; }
+.kt { font-family: "Caveat", var(--font-display); font-size: 1.12rem; line-height: 1.1; padding: 4px 8px; margin: 0 0 3px; border-left: 3px solid currentColor; border-radius: 4px; background: rgba(255,255,255,0.35); color: var(--note-ink, var(--ink)); overflow-wrap: anywhere; }
+.kt b { font-weight: 700; }
+.klink { border: 0; background: none; padding: 2px 0; margin-right: 10px; font-size: 0.74rem; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; color: var(--note-soft, var(--muted)); }
+.klink:hover { color: var(--note-ink, var(--ink)); }
+.kedit { width: 100%; height: 32px; padding: 0 10px; border: 0; border-radius: 10px; background: rgba(255,255,255,0.65); box-shadow: inset 0 0 0 1px rgba(58,46,5,0.3); color: var(--note-ink, var(--ink)); font-size: 0.85rem; }
+.krow { margin-top: 3px; }
+.klink:focus-visible, .kedit:focus-visible { outline-color: var(--note-ink, var(--ink)); }
 .thint { margin: -2px 0 10px; font-size: 0.8rem; color: var(--muted); }
 .tnote { margin: 0 0 10px; padding: 8px 12px; border-radius: 12px; font-size: 0.82rem; background: color-mix(in srgb, var(--danger) 14%, transparent); }
 .bscroll { flex: 1; min-height: 0; display: flex; align-items: flex-start; gap: 20px; overflow: auto; padding: 18px 10px 26px; scroll-snap-type: x proximity; }
@@ -515,7 +523,7 @@ h1 { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; lett
       if (q && typeof q.text === "string" && q.text.trim()) out.quotes.push({ id: String(q.id || rid()), text: q.text.slice(0, 200) });
     });
     if (Array.isArray(d.todos)) d.todos.slice(0, 100).forEach(function (t) {
-      if (t && typeof t.text === "string" && t.text.trim()) out.todos.push({ id: String(t.id || rid()), text: t.text.slice(0, 200), done: !!t.done, day: /^\d{4}-\d{2}-\d{2}$/.test(t.day || "") ? t.day : "" });
+      if (t && typeof t.text === "string" && t.text.trim()) out.todos.push({ id: String(t.id || rid()), text: t.text.slice(0, 200), done: !!t.done, day: /^\d{4}-\d{2}-\d{2}$/.test(t.day || "") ? t.day : "", asal: /^\d{4}-\d{2}-\d{2}$/.test(t.asal || "") ? t.asal : "" });
     });
     if (d.bg && typeof d.bg.id === "string") {
       out.bg = { id: d.bg.id.slice(0, 20), color: /^#[0-9a-f]{6}$/i.test(d.bg.color || "") ? d.bg.color : DEF_BG.color };
@@ -686,7 +694,7 @@ h1 { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; lett
   /* ---------- modal ---------- */
   var tableOpen = false;
   function closeModal() { tableOpen = false; document.getElementById("modalRoot").textContent = ""; document.removeEventListener("keydown", modalKey, true); }
-  function modalKey(e) { if (e.key === "Escape") { e.stopPropagation(); closeModal(); } }
+  function modalKey(e) { if (e.key === "Escape") { e.stopPropagation(); if (editKom) { editKom = ""; renderTodos(); return; } closeModal(); } }
   function openModal(title, body, onSubmit, opts) {
     opts = opts || {};
     var root = document.getElementById("modalRoot");
@@ -1007,7 +1015,15 @@ h1 { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; lett
     var g = greetWord(new Date().getHours());
     setText("greet", state.name ? g + ", " + state.name + "." : g + ".");
   }
+  function carryLocal(td) {
+    carriedLocalOn = td;
+    var moved = false;
+    state.todos.forEach(function (t) { if (!t.done && t.day && t.day < td) { if (!t.asal) t.asal = t.day; t.day = td; moved = true; } });
+    if (moved) touch();
+  }
   function tick() {
+    var td0 = todayStr();
+    if (carriedLocalOn !== td0 && state) carryLocal(td0);
     var now = new Date(), hm = pad2(now.getHours()) + ":" + pad2(now.getMinutes());
     if (hm === lastHM) return;
     lastHM = hm;
@@ -1048,7 +1064,7 @@ h1 { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; lett
   var SECRET_MSG = "Kunci itu rahasia (secret atau service_role) dan tidak boleh dipasang di halaman publik. Pakai kunci publishable atau anon, lalu buat ulang kunci rahasia Anda di Supabase.";
   var cfgMsg = cfgProblem();
   var teamAvail = CFG_PRESENT && !cfgMsg;
-  var teamCode = "", teamTodos = [], teamLoaded = false, teamErr = false, teamWhy = "", teamWriteErr = false, teamWriteWhy = "", teamSig = "", pollTimer = null, teamInfo = null, infoAt = 0, boardTeam = "", addTo = "";
+  var teamCode = "", teamTodos = [], teamLoaded = false, teamErr = false, teamWhy = "", teamWriteErr = false, teamWriteWhy = "", teamSig = "", pollTimer = null, teamInfo = null, infoAt = 0, boardTeam = "", addTo = "", carriedTeamOn = "", carriedLocalOn = "", editKom = "", komDraft = "", komSeen = null;
   var LS_NOTIF = "peluncur-notif-v1", LS_SEEN = "peluncur-lihat-v1", seenInit = false, seenSet = {}, ownIds = {}, ownPending = 0, badge = 0, baseTitle = document.title;
   function cfgProblem() {
     if (!CFG_PRESENT) return "";
@@ -1109,15 +1125,20 @@ h1 { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; lett
         infoAt = Date.now();
         if (!teamInfo || JSON.stringify(inf) !== JSON.stringify(teamInfo)) teamInfo = inf;
       }
+      var hari = todayStr();
+      if (carriedTeamOn !== hari) {
+        carriedTeamOn = hari;
+        try { await teamReq("tugas_geser", { p_kode: code, p_hari: hari }); } catch (eg) {}
+      }
       var rows = await teamReq("tugas_daftar", { p_kode: code });
       if (code !== teamCode) return;
       var list = (Array.isArray(rows) ? rows : []).map(function (r) {
-        return { id: String(r.id), text: String(r.title || ""), done: !!r.done, by: r.author ? String(r.author) : "", day: r.day ? String(r.day).slice(0, 10) : "", team: String(r.team || "") };
+        return { id: String(r.id), text: String(r.title || ""), done: !!r.done, by: r.author ? String(r.author) : "", day: r.day ? String(r.day).slice(0, 10) : "", team: String(r.team || ""), kom: r.komentar ? String(r.komentar) : "", asal: r.asal ? String(r.asal).slice(0, 10) : "" };
       });
       var sig = JSON.stringify(list) + "|" + JSON.stringify(teamInfo);
       var changed = sig !== teamSig || teamErr || !teamLoaded;
       teamSig = sig; teamTodos = list; teamErr = false; teamLoaded = true;
-      notifyNew(list);
+      notifyNew(list); notifyKom(list);
       if (changed) renderTodos();
     } catch (e) {
       var why = explainErr(e);
@@ -1180,6 +1201,20 @@ h1 { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; lett
       }
     }
   }
+  function notifyKom(list) {
+    var prev = komSeen; komSeen = {};
+    list.forEach(function (t) { komSeen[t.id] = t.kom || ""; });
+    if (!prev || isMaster() || ownPending > 0) return;
+    var ch = list.filter(function (t) { return t.kom && prev[t.id] !== undefined && prev[t.id] !== t.kom && !t.done; });
+    if (!ch.length) return;
+    var t = ch[ch.length - 1];
+    var msg = ch.length === 1 ? "Komentar master pada \u201c" + t.text + "\u201d: " + t.kom : ch.length + " komentar baru dari master. Terbaru pada \u201c" + t.text + "\u201d: " + t.kom;
+    toast(msg);
+    if (document.hidden) {
+      badge += ch.length; document.title = "(" + badge + ") " + baseTitle;
+      if (notifOn()) { try { new Notification("Komentar master", { body: msg, tag: "peluncur-komentar" }); } catch (e) {} }
+    }
+  }
   function isMaster() { return !!(teamOn() && teamInfo && teamInfo.master); }
   function addTeam() { return isMaster() ? addTo : ""; }
   function needTeam() { return isMaster() && !addTo; }
@@ -1209,6 +1244,12 @@ h1 { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; lett
     if (isTmp(t)) return;
     teamWrite(function () { return teamReq("tugas_selesai", { p_kode: teamCode, p_id: t.id, p_selesai: nv }); });
   }
+  function teamComment(t, text) {
+    text = String(text || "").trim().slice(0, 300);
+    t.kom = text; if (komSeen) komSeen[t.id] = text; renderTodos();
+    if (isTmp(t)) return;
+    teamWrite(function () { return teamReq("tugas_komentar", { p_kode: teamCode, p_id: t.id, p_teks: text }); });
+  }
   function teamMove(t, day) {
     t.day = day; renderTodos();
     if (isTmp(t)) return;
@@ -1227,7 +1268,7 @@ h1 { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; lett
     if (ids.length) teamWrite(function () { return teamReq("tugas_hapus", { p_kode: teamCode, p_ids: ids }); });
   }
   function setTeamCode(c) {
-    teamCode = c; teamInfo = null; boardTeam = ""; addTo = ""; seenInit = false; seenSet = {}; ownPending = 0; teamTodos = []; teamLoaded = false; teamErr = false; teamWriteErr = false; teamSig = "";
+    teamCode = c; carriedTeamOn = ""; komSeen = null; editKom = ""; teamInfo = null; boardTeam = ""; addTo = ""; seenInit = false; seenSet = {}; ownPending = 0; teamTodos = []; teamLoaded = false; teamErr = false; teamWriteErr = false; teamSig = "";
     try { localStorage.setItem(LS_TEAM, c); } catch (e) {}
     renderTodos(); teamStartPolling(); teamFetch();
   }
@@ -1339,6 +1380,37 @@ h1 { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; lett
   }
   function moveTask(t, day) { if (teamOn()) teamMove(t, day); else { t.day = day; touch(); } }
 
+  function komRow(t, where) {
+    var team = teamOn(), master = isMaster();
+    if (!team) return null;
+    var canEdit = master && !t.done;
+    if (!t.kom && !canEdit) return null;
+    var li = el("li", "kli");
+    var editing = editKom === t.id && canEdit && (where === "board") === tableOpen;
+    if (editing) {
+      var inp = el("input", "kedit"); inp.type = "text"; inp.maxLength = 300; inp.autocomplete = "off";
+      inp.value = komDraft; inp.placeholder = "Komentar untuk tim"; inp.setAttribute("data-k", "kom-" + t.id); inp.setAttribute("aria-label", "Komentar untuk: " + t.text);
+      inp.addEventListener("input", function () { komDraft = inp.value; });
+      var save = function () { var v = inp.value; editKom = ""; teamComment(t, v); };
+      inp.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); save(); } });
+      li.appendChild(inp);
+      var row = el("div", "krow");
+      row.appendChild(btn("klink", "Simpan", "Simpan komentar", save));
+      row.appendChild(btn("klink", "Batal", "Batal", function () { editKom = ""; renderTodos(); }));
+      if (t.kom) row.appendChild(btn("klink", "Hapus komentar", null, function () { editKom = ""; teamComment(t, ""); }));
+      li.appendChild(row);
+      return li;
+    }
+    if (t.kom) { var kt = el("div", "kt"); kt.appendChild(el("b", null, "Master: ")); kt.appendChild(document.createTextNode(t.kom)); li.appendChild(kt); }
+    if (canEdit) li.appendChild(btn("klink", t.kom ? "Ubah komentar" : "+ Komentar", (t.kom ? "Ubah komentar untuk: " : "Beri komentar untuk: ") + t.text, function () { editKom = t.id; komDraft = t.kom || ""; renderTodos(); }));
+    return li;
+  }
+  function focusKom(root) {
+    if (!editKom || !root) return;
+    var i = root.querySelector('[data-k="kom-' + editKom + '"]');
+    if (i && document.activeElement !== i) { i.focus(); try { i.setSelectionRange(i.value.length, i.value.length); } catch (e) {} }
+  }
+
   function renderTodos() {
     var ul = document.getElementById("todoList");
     ul.textContent = "";
@@ -1346,6 +1418,7 @@ h1 { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; lett
     var list = taskList();
     var today = todayStr();
     var vis = list.filter(function (t) { return !t.day || t.day <= today; });
+    vis = vis.filter(function (t) { return !t.done; }).concat(vis.filter(function (t) { return t.done; }));
     var open = vis.filter(function (t) { return !t.done; }).length;
     setText("todoBtn", open ? "Tugas · " + open : "Tugas");
     setText("todoCount", vis.length ? (vis.length - open) + "/" + vis.length : "");
@@ -1374,13 +1447,16 @@ h1 { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; lett
       var tx = el("span", "t" + (t.done ? " done" : ""), t.text);
       var tag = [];
       if (t.day && t.day < today && !t.done) tag.push("lewat " + dshort(t.day));
+      else if (t.asal && t.asal !== t.day && !t.done) tag.push("dari " + dshort(t.asal));
       if (master && t.team) tag.push(t.team);
       if (team && t.by) tag.push(t.by);
       if (tag.length) tx.appendChild(el("small", "tby", " · " + tag.join(" · ")));
       li.appendChild(tx);
       li.appendChild(btn("xbtn", "×", "Hapus tugas: " + t.text, function () { removeTask(t); }));
       ul.appendChild(li);
+      var kr = komRow(t, "sticky"); if (kr) ul.appendChild(kr);
     });
+    focusKom(document.getElementById("todoPop"));
     document.getElementById("todoClear").hidden = !list.some(function (t) { return t.done; });
     if (tableOpen) { if (dragging) pendingBoard = true; else renderTable(); }
   }
@@ -1464,7 +1540,7 @@ h1 { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; lett
       if (items.length) h.appendChild(el("span", "ncount", dn + "/" + items.length));
       n.appendChild(h);
       var ul = el("ul", "nl");
-      items.slice().sort(function (a, b) { return (a.done ? 1 : 0) - (b.done ? 1 : 0); }).forEach(function (t) { ul.appendChild(taskItem(t)); });
+      items.slice().sort(function (a, b) { return (a.done ? 1 : 0) - (b.done ? 1 : 0); }).forEach(function (t) { ul.appendChild(taskItem(t)); var kr = komRow(t, "board"); if (kr) ul.appendChild(kr); });
       if (!items.length) ul.appendChild(el("li", "nempty", day === null ? "" : "Kosong"));
       n.appendChild(ul);
       if (day !== null) {
@@ -1498,6 +1574,7 @@ h1 { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; lett
       li.appendChild(c);
       var tx = el("span", "t" + (t.done ? " done" : ""), t.text);
       var tag = [];
+      if (t.asal && t.asal !== t.day && !t.done) tag.push("dari " + dshort(t.asal));
       if (master && t.team) tag.push(t.team);
       if (team && t.by) tag.push(t.by);
       if (tag.length) tx.appendChild(el("small", "tby", " · " + tag.join(" · ")));
@@ -1526,6 +1603,7 @@ h1 { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; lett
       var back = m.querySelector('[data-k="' + fk + '"]');
       if (back) { back.value = fv; back.focus(); try { back.setSelectionRange(fs, fs); } catch (e) {} }
     }
+    focusKom(m);
   }
   function setTodoOpen(open, focus, silent) {
     var pop = document.getElementById("todoPop");
